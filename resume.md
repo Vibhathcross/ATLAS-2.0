@@ -14,12 +14,22 @@ Idukki, Kerala, India | [vibhathcross@gmail.com](mailto:vibhathcross@gmail.com)
 
 ---
 
-## Projects (All GitHub Repositories)
+## Projects (GitHub Repositories)
 
-### **ATLAS 2.0 — Desktop AI Assistant & Automation Engine**
+### **ATLAS 2.0 — Advanced Autonomous Desktop AI Assistant & Automation Engine**
 *Python, FastAPI, WebSockets, Three.js, PyQt6, MediaPipe, Resemblyzer, SQLite*  
-[[GitHub Code (ATLAS 2.0)](https://github.com/Vibhathcross/ATLAS-2.0)] | [[Atlas-os-assistant](https://github.com/Vibhathcross/Atlas-os-assistant)]  
-Architected an autonomous desktop assistant leveraging FastAPI WebSockets, Three.js 3D visualization, MediaPipe hand tracking for 30 FPS air-mouse control, and Resemblyzer d-vector speaker biometrics to restrict voice commands to the authorized user.
+[[GitHub Code](https://github.com/Vibhathcross/ATLAS-2.0)]  
+Architected an advanced autonomous desktop assistant evolved from Atlas OS, integrating FastAPI WebSockets, Three.js 3D visualization, MediaPipe 30 FPS air-mouse control, and Resemblyzer d-vector speaker biometrics to restrict voice commands to the authorized user.
+
+### **ATLAS (v1) — Desktop Voice & OS Automation Assistant**
+*Python, PyQt6, SpeechRecognition, Pyttsx3, WinAPI*  
+[[GitHub Code](https://github.com/Vibhathcross/Atlas-os-assistant)]  
+Engineered the foundational ATLAS desktop voice assistant with Python and PyQt6 to execute hands-free OS commands and window automations, serving as the direct functional prototype that motivated ATLAS 2.0.
+
+### **Jasmin AI — Experimental AI Assistant (Trial Prototype)**
+*Python, Flask, ChromaDB, Vosk, Whisper, WinAPI (`pycaw`, `pyautogui`)*  
+[[GitHub Code](https://github.com/Vibhathcross/jasmin-AI)]  
+Developed Jasmin AI as an initial experimental trial exploring desktop AI assistance, integrating offline Vosk speech recognition, a Naive Bayes command classifier, and ChromaDB vector retrieval for local contextual recall.
 
 ### **Aether Carbon — Carbon Footprint Tracker**
 *React 19, Vite, Tailwind CSS, Supabase, LLM APIs*  
@@ -46,11 +56,6 @@ Implemented a model-free Tabular Q-Learning simulation for a 5×5 discrete grid 
 [[GitHub Code](https://github.com/Vibhathcross/TubeQueue)]  
 Created an automated YouTube video publishing daemon in Python utilizing Google OAuth 2.0 and Google's 5 MB chunked resumable upload protocol to ensure reliable scheduled releases across network interruptions.
 
-### **Jasmin AI — Voice Assistant & OS Automation**
-*Python, Flask, ChromaDB, Vosk, Whisper, WinAPI (`pycaw`, `pyautogui`)*  
-[[GitHub Code](https://github.com/Vibhathcross/jasmin-AI)]  
-Built an offline-capable Windows voice assistant integrating ChromaDB vector memory for local RAG, a 98% accurate Naive Bayes command classifier, and native WinAPI system automations.
-
 ### **Flagship Personal Portfolio**
 *Next.js, React 19, Tailwind CSS, WebGL Canvas*  
 [[GitHub Code](https://github.com/Vibhathcross/Portfolio)] | [[Live Site](https://vibhathcross.github.io/Portfolio/)]  
@@ -61,25 +66,10 @@ Designed a physics-backed Next.js and React 19 engineering portfolio featuring G
 [[GitHub Code](https://github.com/Vibhathcross/Aerostream)]  
 Developed a desktop media player in Electron, React 19, and Vite that uses yt-dlp to deliver ad-free streaming, audio conversion, and local offline vault caching.
 
-### **Heartly — Real-Time Collaborative Platform**
-*Node.js, Express, TypeScript, MongoDB GridFS, Socket.IO*  
-[[GitHub Code](https://github.com/Vibhathcross/Heartly)]  
-Built a real-time private collaborative web sanctuary with Node.js, Express, Socket.IO, and MongoDB GridFS for binary photo streaming and synchronized interactive canvas drawing.
-
 ### **Secure-Access-Gateway**
 *HTML5, CSS3, JavaScript, Web Audio API*  
 [[GitHub Code](https://github.com/Vibhathcross/Secure-Access-Gateway)] | [[Live Demo](https://vibhathcross.github.io/Secure-Access-Gateway/)]  
 Engineered an interactive cyber authentication simulation featuring procedural audio synthesis via the Web Audio API, fullscreen locking, and buffer tracking.
-
-### **OS_projects — CPU Scheduling Algorithms**
-*C, GCC*  
-[[GitHub Code](https://github.com/Vibhathcross/OS_projects)]  
-Implemented First-Come First-Served (FCFS) CPU scheduling algorithms in C to compute waiting time and turnaround time metrics for process management.
-
-### **my_c_project — Modular Calculation Engine**
-*C, GCC*  
-[[GitHub Code](https://github.com/Vibhathcross/my_c_project)]  
-Developed a modular arithmetic calculation engine in C with divide-by-zero protection and structured command-line input validation.
 
 ### **Padakkalam — Cultural Festival Web Portal**
 *HTML5, CSS3, JavaScript, JSON*  
@@ -90,16 +80,6 @@ Built a cultural portal rendering dynamic JSON event schedules and game itinerar
 *HTML5, CSS3, JavaScript*  
 [[GitHub Code](https://github.com/Vibhathcross/Thripura-Buisiness-Webpage)] | [[Live Site](https://vibhathcross.github.io/Thripura-Buisiness-Webpage/)]  
 Created a commercial digital showcase and service catalog portal for Thripura Press commercial printing operations.
-
-### **The Gift Digest**
-*HTML5, CSS3, JavaScript*  
-[[GitHub Code](https://github.com/Vibhathcross/the-gift-Digest-)]  
-Developed a curated gift recommendation showcase web application featuring interactive card filtering and responsive styling.
-
-### **Anniversary & Celebration Projects (Anniversary / Chachuz-bday)**
-*HTML5, CSS3, JavaScript*  
-[[Anniversary Code](https://github.com/Vibhathcross/anniversary)] | [[Chachuz-bday Code](https://github.com/Vibhathcross/chachuz-bday)]  
-Created personalized multimedia celebration web experiences utilizing custom CSS keyframe animations, responsive layouts, and background audio integration.
 
 ---
 
@@ -138,4 +118,4 @@ Government Engineering College, Idukki — APJ Abdul Kalam Technological Univers
 ## Achievements
 
 * **Google Prompt Wars:** Participated with *Aether Carbon*, a multimodal AI carbon tracking application [[LinkedIn Verification](https://www.linkedin.com/posts/vibhath-t-k-360b2525a_promptwars-hack2skill-googlefordevelopers-ugcPost-7474357143165390848-TXll/)].
-* **Open Source Developer:** Created and published 18 public repositories on GitHub across systems, AI, and web tools [[GitHub Profile](https://github.com/Vibhathcross)].
+* **Open Source Developer:** Created and published 19 public repositories on GitHub across systems, AI, and web tools [[GitHub Profile](https://github.com/Vibhathcross)].

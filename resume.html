@@ -3,18 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vibhath T K - Resume</title>
+  <title>Vibhath T K — Resume</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --text-main: #111827;
-      --text-muted: #374151;
-      --text-light: #6b7280;
-      --line: #d1d5db;
-      --accent: #1d4ed8;
-      --bg: #ffffff;
+      --primary: #0f172a;
+      --secondary: #334155;
+      --text-main: #1e293b;
+      --text-muted: #475569;
+      --text-light: #64748b;
+      --accent: #2563eb;
+      --line: #e2e8f0;
+      --bg-pill: #f1f5f9;
     }
 
     * {
@@ -26,103 +28,132 @@
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--text-main);
-      background-color: #f3f4f6;
-      font-size: 8.6pt;
+      background: #f8fafc;
       line-height: 1.36;
+      font-size: 8.4pt;
       -webkit-font-smoothing: antialiased;
     }
 
-    .no-print {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      z-index: 100;
+    /* Print Preview Container */
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 20px auto;
+      padding: 12mm 14mm 12mm 14mm;
+      background: #ffffff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      border-radius: 4px;
+    }
+
+    @media print {
+      body {
+        background: transparent;
+      }
+      .page {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        border-radius: 0;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    @page {
+      size: A4;
+      margin: 10mm 12mm 10mm 12mm;
+    }
+
+    /* Print Controls */
+    .print-bar {
+      width: 210mm;
+      margin: 16px auto 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      background: #0f172a;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 13px;
     }
 
     .print-btn {
-      background: var(--text-main);
-      color: #fff;
+      background: #2563eb;
+      color: white;
       border: none;
-      padding: 8px 16px;
-      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 12.5px;
       font-weight: 600;
-      border-radius: 6px;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      transition: background 0.15s ease;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
+      transition: background 0.15s ease;
     }
-
     .print-btn:hover {
-      background: #000;
-    }
-
-    .resume {
-      max-width: 800px;
-      margin: 20px auto;
-      background: var(--bg);
-      padding: 30px 38px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      background: #1d4ed8;
     }
 
     /* Header */
     header {
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 8px;
       margin-bottom: 9px;
-      border-bottom: 1.5px solid var(--text-main);
-      padding-bottom: 5px;
-    }
-
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
+      text-align: center;
     }
 
     h1 {
       font-size: 19pt;
       font-weight: 700;
-      letter-spacing: -0.5px;
-      color: var(--text-main);
+      letter-spacing: -0.4px;
+      color: var(--primary);
+      line-height: 1.1;
+      margin-bottom: 2px;
+      text-transform: uppercase;
     }
 
-    .headline {
-      font-size: 9.6pt;
+    .subtitle {
+      font-size: 9.8pt;
       font-weight: 600;
       color: var(--accent);
+      margin-bottom: 4px;
+      letter-spacing: 0.1px;
     }
 
-    .contact {
+    .contact-bar {
       display: flex;
+      justify-content: center;
+      align-items: center;
       flex-wrap: wrap;
       gap: 12px;
-      margin-top: 4px;
-      font-size: 8.2pt;
+      font-size: 8pt;
       color: var(--text-muted);
     }
 
-    .contact a {
-      color: var(--text-main);
-      text-decoration: none;
-      font-weight: 500;
+    .contact-item {
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
     }
-
-    .contact a:hover {
+    .contact-item:hover {
       color: var(--accent);
       text-decoration: underline;
     }
 
     /* Section Styling */
     section {
-      margin-bottom: 9px;
+      margin-bottom: 8px;
     }
 
     h2 {
-      font-size: 9.3pt;
+      font-size: 9pt;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.6px;
@@ -143,7 +174,7 @@
     .skill-row {
       display: grid;
       grid-template-columns: 140px 1fr;
-      line-height: 1.34;
+      line-height: 1.32;
     }
 
     .skill-title {
@@ -158,21 +189,22 @@
     /* Proof Badges with Logos */
     .proof-links {
       display: inline-flex;
-      gap: 5px;
+      gap: 4px;
       margin-left: 6px;
       vertical-align: middle;
+      flex-wrap: wrap;
     }
 
     .proof-link {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      font-size: 7.5pt;
+      gap: 3.5px;
+      font-size: 7.2pt;
       font-weight: 600;
-      padding: 1.5px 6px;
-      border-radius: 4px;
+      padding: 1.2px 5px;
+      border-radius: 3px;
       text-decoration: none;
-      line-height: 1.25;
+      line-height: 1.2;
       transition: all 0.15s ease;
     }
 
@@ -208,13 +240,15 @@
 
     .proof-icon {
       flex-shrink: 0;
-      width: 11.5px;
-      height: 11.5px;
+      width: 10.5px;
+      height: 10.5px;
     }
 
     /* Project Entries */
     .item {
-      margin-bottom: 6.5px;
+      margin-bottom: 5px;
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     .item:last-child {
@@ -226,6 +260,7 @@
       justify-content: space-between;
       align-items: baseline;
       flex-wrap: wrap;
+      gap: 2px;
     }
 
     .item-title-wrap {
@@ -235,129 +270,102 @@
     }
 
     .item-title {
-      font-size: 8.8pt;
+      font-size: 8.5pt;
       font-weight: 700;
       color: var(--text-main);
     }
 
     .item-tagline {
-      font-size: 8.2pt;
+      font-size: 8pt;
       font-weight: 500;
       color: var(--accent);
     }
 
     .item-meta {
-      font-size: 7.6pt;
+      font-size: 7.4pt;
       color: var(--text-light);
     }
 
-    ul {
-      list-style-type: disc;
-      padding-left: 15px;
-      margin-top: 1.5px;
+    .single-sentence {
+      font-size: 8.1pt;
+      line-height: 1.34;
+      color: #374151;
+      margin-top: 1px;
+      padding-left: 10px;
+      position: relative;
     }
 
-    li {
-      font-size: 8.2pt;
-      color: var(--text-muted);
-      line-height: 1.32;
-      margin-bottom: 1.2px;
+    .single-sentence::before {
+      content: "•";
+      position: absolute;
+      left: 1px;
+      color: var(--text-light);
+      font-size: 9pt;
+      line-height: 1.2;
     }
 
-    /* Grid for Certifications */
+    /* Certifications Grid */
     .cert-list {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 3.5px 14px;
-      font-size: 8.2pt;
+      gap: 3px 12px;
+      font-size: 7.8pt;
     }
 
     .cert-item {
       display: flex;
       flex-direction: column;
+      line-height: 1.25;
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     .cert-item-title {
       display: flex;
       align-items: center;
       justify-content: space-between;
-    }
-
-    .cert-item strong {
+      font-weight: 600;
       color: var(--text-main);
     }
 
     .cert-item span {
       color: var(--text-light);
-      font-size: 7.6pt;
-    }
-
-    /* Print Setup */
-    @media print {
-      body {
-        background: #fff;
-      }
-
-      .no-print {
-        display: none !important;
-      }
-
-      .resume {
-        margin: 0;
-        padding: 0;
-        box-shadow: none;
-        max-width: 100%;
-      }
-
-      .proof-link {
-        border: none;
-        background: transparent;
-        padding: 0;
-      }
-
-      @page {
-        size: A4;
-        margin: 7mm 11mm;
-      }
+      font-size: 7.2pt;
     }
   </style>
 </head>
 <body>
 
-  <div class="no-print">
+  <!-- Controls (Hidden on Print) -->
+  <div class="print-bar no-print">
+    <div><strong>Vibhath T K — Professional Resume</strong> (Print to PDF via <kbd>Ctrl + P</kbd>)</div>
     <button class="print-btn" onclick="window.print()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="6 9 6 2 18 2 18 9"></polyline>
-        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-        <rect x="6" y="14" width="12" height="8"></rect>
-      </svg>
-      Print to PDF (Ctrl + P)
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+      Print / Save as PDF
     </button>
   </div>
 
-  <div class="resume">
+  <div class="page">
     <!-- Header -->
     <header>
-      <div class="header-top">
-        <h1>Vibhath T K</h1>
-        <div class="headline">Information Technology Student & AI Augmented Developer</div>
-      </div>
-      <div class="contact">
-        <span>📍 Idukki, Kerala, India</span>
-        <span>✉️ <a href="mailto:vibhathcross@gmail.com">vibhathcross@gmail.com</a></span>
-        <span>🌐 <a href="https://vibhathcross.github.io/Portfolio/" target="_blank">Portfolio ↗</a></span>
-        <span>
-          <a href="https://github.com/Vibhathcross" target="_blank">
-            <svg class="proof-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-            GitHub ↗
-          </a>
-        </span>
-        <span>
-          <a href="https://www.linkedin.com/in/vibhath-t-k-360b2525a/" target="_blank">
-            <svg class="proof-icon" viewBox="0 0 24 24" fill="#0a66c2"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-            LinkedIn ↗
-          </a>
-        </span>
+      <h1>Vibhath T K</h1>
+      <div class="subtitle">Information Technology Student &amp; AI Augmented Developer</div>
+      <div class="contact-bar">
+        <span>Idukki, Kerala, India</span>
+        <span>•</span>
+        <a class="contact-item" href="mailto:vibhathcross@gmail.com">vibhathcross@gmail.com</a>
+        <span>•</span>
+        <a class="contact-item" href="https://vibhathcross.github.io/Portfolio/" target="_blank">Portfolio</a>
+        <span>•</span>
+        <a class="contact-item" href="https://github.com/Vibhathcross" target="_blank">
+          <svg class="proof-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          github.com/Vibhathcross
+        </a>
+        <span>•</span>
+        <a class="contact-item" href="https://www.linkedin.com/in/vibhath-t-k-360b2525a/" target="_blank">
+          <svg class="proof-icon" viewBox="0 0 24 24" fill="#0a66c2"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          linkedin.com/in/vibhath-t-k
+        </a>
       </div>
     </header>
 
@@ -370,16 +378,16 @@
           <span class="skill-desc">Python, JavaScript (ES6+), TypeScript, C, SQL, HTML5, CSS3</span>
         </div>
         <div class="skill-row">
-          <span class="skill-title">Frameworks & Web:</span>
+          <span class="skill-title">Frameworks &amp; Web:</span>
           <span class="skill-desc">React 19, Next.js, Vite, Tailwind CSS, FastAPI, Flask, Electron, PyQt6</span>
         </div>
         <div class="skill-row">
-          <span class="skill-title">AI & ML Tools:</span>
+          <span class="skill-title">AI &amp; Machine Learning:</span>
           <span class="skill-desc">LLM APIs (Gemini, Claude, Ollama), MediaPipe, OpenCV, ChromaDB, Resemblyzer, Q-Learning</span>
         </div>
         <div class="skill-row">
-          <span class="skill-title">Databases & Tools:</span>
-          <span class="skill-desc">PostgreSQL (Supabase), SQLite, Git, Linux, Windows, FFmpeg, Postman</span>
+          <span class="skill-title">Databases &amp; Tools:</span>
+          <span class="skill-desc">PostgreSQL (Supabase), SQLite, MongoDB, Git, Linux, Windows, FFmpeg, Postman</span>
         </div>
       </div>
     </section>
@@ -392,7 +400,24 @@
       <div class="item">
         <div class="item-header">
           <div class="item-title-wrap">
-            <span class="item-title">ATLAS 2.0 — Desktop AI Assistant & Automation Engine</span>
+            <span class="item-title">ATLAS 2.0 — Advanced Autonomous Desktop AI Assistant &amp; Automation Engine</span>
+            <div class="proof-links">
+              <a class="proof-link proof-github" href="https://github.com/Vibhathcross/ATLAS-2.0" target="_blank">
+                <svg class="proof-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub
+              </a>
+            </div>
+          </div>
+          <span class="item-meta">Python, FastAPI, WebSockets, Three.js, PyQt6, MediaPipe, Resemblyzer, SQLite</span>
+        </div>
+        <div class="single-sentence">Architected an advanced autonomous desktop assistant evolved from Atlas OS, integrating FastAPI WebSockets, Three.js 3D visualization, MediaPipe 30 FPS air-mouse control, and Resemblyzer d-vector speaker biometrics to restrict voice commands to the authorized user.</div>
+      </div>
+
+      <!-- ATLAS (v1) -->
+      <div class="item">
+        <div class="item-header">
+          <div class="item-title-wrap">
+            <span class="item-title">ATLAS (v1) — Desktop Voice &amp; OS Automation Assistant</span>
             <div class="proof-links">
               <a class="proof-link proof-github" href="https://github.com/Vibhathcross/Atlas-os-assistant" target="_blank">
                 <svg class="proof-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
@@ -400,14 +425,26 @@
               </a>
             </div>
           </div>
-          <span class="item-meta">Python, FastAPI, WebSockets, Three.js, PyQt6, MediaPipe, Resemblyzer</span>
+          <span class="item-meta">Python, PyQt6, SpeechRecognition, Pyttsx3, WinAPI</span>
         </div>
-        <ul>
-          <li>Built an autonomous desktop assistant running a FastAPI WebSocket server with an interactive Three.js interface.</li>
-          <li>Integrated MediaPipe hand tracking for real-time cursor navigation and gesture controls (air mouse) at 30 FPS.</li>
-          <li>Implemented speaker verification using Resemblyzer voice embeddings to verify user identity before executing sensitive commands.</li>
-          <li>Added hybrid command routing supporting local Windows controls, cloud/local LLMs (Gemini, Ollama), and an authenticated Telegram bot for remote execution.</li>
-        </ul>
+        <div class="single-sentence">Engineered the foundational ATLAS desktop voice assistant with Python and PyQt6 to execute hands-free OS commands and window automations, serving as the direct functional prototype that motivated ATLAS 2.0.</div>
+      </div>
+
+      <!-- Jasmin AI -->
+      <div class="item">
+        <div class="item-header">
+          <div class="item-title-wrap">
+            <span class="item-title">Jasmin AI — Experimental AI Assistant (Trial Prototype)</span>
+            <div class="proof-links">
+              <a class="proof-link proof-github" href="https://github.com/Vibhathcross/jasmin-AI" target="_blank">
+                <svg class="proof-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub
+              </a>
+            </div>
+          </div>
+          <span class="item-meta">Python, Flask, ChromaDB, Vosk, Whisper, WinAPI</span>
+        </div>
+        <div class="single-sentence">Developed Jasmin AI as an initial experimental trial exploring desktop AI assistance, integrating offline Vosk speech recognition, a Naive Bayes command classifier, and ChromaDB vector retrieval for local contextual recall.</div>
       </div>
 
       <!-- Aether Carbon -->
@@ -432,11 +469,7 @@
           </div>
           <span class="item-meta">React 19, Vite, Tailwind CSS, Supabase, LLM APIs</span>
         </div>
-        <ul>
-          <li>Developed a personal carbon footprint tracking application for <strong>Google Prompt Wars</strong> (Hack2skill & Google for Developers).</li>
-          <li>Used structured LLM prompts to extract carbon emission estimates and reduction recommendations from unstructured daily activity journals.</li>
-          <li>Configured user authentication and PostgreSQL Row Level Security (RLS) on Supabase for protected data storage.</li>
-        </ul>
+        <div class="single-sentence">Developed an AI-augmented environmental tracking platform for <strong>Google Prompt Wars</strong> using React 19, Supabase RLS, and zero-shot LLM prompts to extract structured carbon metrics and mitigation advice from natural language activity journals.</div>
       </div>
 
       <!-- CodSoft Projects (CODSOFT_TASKSNO) -->
@@ -457,14 +490,15 @@
                 <svg class="proof-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                 Calculator
               </a>
+              <a class="proof-link proof-demo" href="https://vibhathcross.github.io/CODSOFT_TASKSNO/stomp-landing-page/" target="_blank">
+                <svg class="proof-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                Landing Page
+              </a>
             </div>
           </div>
-          <span class="item-meta">HTML5, Three.js, React 19, Supabase, GSAP</span>
+          <span class="item-meta">HTML5, Three.js, React 19, Supabase, Vite</span>
         </div>
-        <ul>
-          <li>Engineered 3 web applications: an interactive 3D portfolio with Three.js WebGL rotation and GSAP scroll triggers, a responsive product landing page, and a glassmorphic scientific calculator with Supabase persistence.</li>
-          <li>Deployed all applications live via automated GitHub Pages pipelines.</li>
-        </ul>
+        <div class="single-sentence">Built and deployed three production-grade web applications for the CodSoft internship, including a Three.js 3D WebGL portfolio, a responsive landing page, and a React 19 scientific calculator with Supabase history logging.</div>
       </div>
 
       <!-- VidZone Video Editor -->
@@ -479,13 +513,9 @@
               </a>
             </div>
           </div>
-          <span class="item-meta">React 19, TypeScript, Electron 34, Vite, FFmpeg.wasm</span>
+          <span class="item-meta">React 19, TypeScript, Electron, Vite, FFmpeg.wasm</span>
         </div>
-        <ul>
-          <li>Built a desktop video editor in React, TypeScript, and Electron that executes entirely on the client side with zero backend servers.</li>
-          <li>Integrated FFmpeg.wasm to process and render MP4 videos directly within the browser/Electron sandbox.</li>
-          <li>Implemented timeline overlay layers, live audio waveforms, and 2x resolution PDF-to-image extraction.</li>
-        </ul>
+        <div class="single-sentence">Engineered a zero-server desktop video editor using React 19, TypeScript, Electron, and FFmpeg.wasm that encodes lossless 1080p H.264 video natively on the client device.</div>
       </div>
 
       <!-- Q-Learning Grid World Simulator -->
@@ -502,18 +532,14 @@
           </div>
           <span class="item-meta">Python, Flask, NumPy, JavaScript, Chart.js</span>
         </div>
-        <ul>
-          <li>Implemented Tabular Q-Learning for a 5×5 discrete grid world navigation environment (S5 Machine Learning Lab).</li>
-          <li>Simulated obstacle avoidance and goal convergence using an epsilon-greedy decay policy.</li>
-          <li>Created an interactive Flask web UI displaying live Chart.js training reward curves.</li>
-        </ul>
+        <div class="single-sentence">Implemented a model-free Tabular Q-Learning simulation for a 5×5 discrete grid world with Bellman optimality updates and an interactive Flask web UI featuring live Chart.js training convergence curves.</div>
       </div>
 
       <!-- TubeQueue -->
       <div class="item">
         <div class="item-header">
           <div class="item-title-wrap">
-            <span class="item-title">TubeQueue — YouTube Upload & Cadence Scheduler</span>
+            <span class="item-title">TubeQueue — YouTube Upload &amp; Cadence Scheduler</span>
             <div class="proof-links">
               <a class="proof-link proof-github" href="https://github.com/Vibhathcross/TubeQueue" target="_blank">
                 <svg class="proof-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
@@ -523,10 +549,108 @@
           </div>
           <span class="item-meta">Python 3, Google API Client, OAuth 2.0, SQLite</span>
         </div>
-        <ul>
-          <li>Developed a Python automation tool for scheduled YouTube video publishing with Google OAuth 2.0 authentication.</li>
-          <li>Implemented Google's resumable 5 MB chunked media upload protocol to recover from network drops during uploads.</li>
-        </ul>
+        <div class="single-sentence">Created an automated YouTube video publishing daemon in Python utilizing Google OAuth 2.0 and Google's 5 MB chunked resumable upload protocol to ensure reliable scheduled releases across network interruptions.</div>
+      </div>
+
+      <!-- Flagship Personal Portfolio -->
+      <div class="item">
+        <div class="item-header">
+          <div class="item-title-wrap">
+            <span class="item-title">Flagship Personal Portfolio</span>
+            <div class="proof-links">
+              <a class="proof-link proof-github" href="https://github.com/Vibhathcross/Portfolio" target="_blank">
+                <svg class="proof-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub
+              </a>
+              <a class="proof-link proof-demo" href="https://vibhathcross.github.io/Portfolio/" target="_blank">
+                <svg class="proof-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                Live Site
+              </a>
+            </div>
+          </div>
+          <span class="item-meta">Next.js, React 19, Tailwind CSS, WebGL Canvas</span>
+        </div>
+        <div class="single-sentence">Designed a physics-backed Next.js and React 19 engineering portfolio featuring GPU-accelerated canvas particle mechanics, interactive 3D card decks, and glassmorphic UI design.</div>
+      </div>
+
+      <!-- AeroStream -->
+      <div class="item">
+        <div class="item-header">
+          <div class="item-title-wrap">
+            <span class="item-title">AeroStream — Desktop Media Player</span>
+            <div class="proof-links">
+              <a class="proof-link proof-github" href="https://github.com/Vibhathcross/Aerostream" target="_blank">
+                <svg class="proof-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub
+              </a>
+            </div>
+          </div>
+          <span class="item-meta">Electron, React 19, Vite, yt-dlp, FFmpeg</span>
+        </div>
+        <div class="single-sentence">Developed a desktop media player in Electron, React 19, and Vite that uses yt-dlp to deliver ad-free streaming, audio conversion, and local offline vault caching.</div>
+      </div>
+
+      <!-- Secure-Access-Gateway -->
+      <div class="item">
+        <div class="item-header">
+          <div class="item-title-wrap">
+            <span class="item-title">Secure-Access-Gateway</span>
+            <div class="proof-links">
+              <a class="proof-link proof-github" href="https://github.com/Vibhathcross/Secure-Access-Gateway" target="_blank">
+                <svg class="proof-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub
+              </a>
+              <a class="proof-link proof-demo" href="https://vibhathcross.github.io/Secure-Access-Gateway/" target="_blank">
+                <svg class="proof-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                Live Demo
+              </a>
+            </div>
+          </div>
+          <span class="item-meta">HTML5, CSS3, JavaScript, Web Audio API</span>
+        </div>
+        <div class="single-sentence">Engineered an interactive cyber authentication simulation featuring procedural audio synthesis via the Web Audio API, fullscreen locking, and buffer tracking.</div>
+      </div>
+
+      <!-- Padakkalam -->
+      <div class="item">
+        <div class="item-header">
+          <div class="item-title-wrap">
+            <span class="item-title">Padakkalam — Cultural Festival Web Portal</span>
+            <div class="proof-links">
+              <a class="proof-link proof-github" href="https://github.com/Vibhathcross/Padakkalam" target="_blank">
+                <svg class="proof-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub
+              </a>
+              <a class="proof-link proof-demo" href="https://vibhathcross.github.io/Padakkalam/" target="_blank">
+                <svg class="proof-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                Live Site
+              </a>
+            </div>
+          </div>
+          <span class="item-meta">HTML5, CSS3, JavaScript, JSON</span>
+        </div>
+        <div class="single-sentence">Built a cultural portal rendering dynamic JSON event schedules and game itineraries for Kerala Onam celebrations.</div>
+      </div>
+
+      <!-- Thripura Business Webpage -->
+      <div class="item">
+        <div class="item-header">
+          <div class="item-title-wrap">
+            <span class="item-title">Thripura Business Webpage</span>
+            <div class="proof-links">
+              <a class="proof-link proof-github" href="https://github.com/Vibhathcross/Thripura-Buisiness-Webpage" target="_blank">
+                <svg class="proof-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub
+              </a>
+              <a class="proof-link proof-demo" href="https://vibhathcross.github.io/Thripura-Buisiness-Webpage/" target="_blank">
+                <svg class="proof-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                Live Site
+              </a>
+            </div>
+          </div>
+          <span class="item-meta">HTML5, CSS3, JavaScript</span>
+        </div>
+        <div class="single-sentence">Created a commercial digital showcase and service catalog portal for Thripura Press commercial printing operations.</div>
       </div>
     </section>
 
@@ -540,15 +664,13 @@
           </div>
           <span class="item-meta">Virtual Internship</span>
         </div>
-        <ul>
-          <li>Completed structured web development internship delivering full-stack and frontend modules with version control and automated deployments.</li>
-        </ul>
+        <div class="single-sentence">Completed structured web development internship delivering full-stack and frontend modules with version control and automated deployments.</div>
       </div>
     </section>
 
     <!-- Licenses & Certifications with Direct LinkedIn Proofs -->
     <section>
-      <h2>Certifications & Verification Proofs</h2>
+      <h2>Certifications &amp; Verification Proofs</h2>
       <div class="cert-list">
         <div class="cert-item">
           <div class="cert-item-title">
@@ -582,13 +704,13 @@
         </div>
         <div class="cert-item">
           <div class="cert-item-title">
-            <strong>Digital 101 Program (AI & Future Skills)</strong>
+            <strong>Digital 101 Program (AI &amp; Future Skills)</strong>
             <a class="proof-link proof-linkedin" href="https://www.linkedin.com/posts/vibhath-t-k-360b2525a_futureskillsprime-digital101-ai-share-7347297810418962436-L3p5/" target="_blank">
               <svg class="proof-icon" viewBox="0 0 24 24" fill="#0a66c2"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
               LinkedIn Proof
             </a>
           </div>
-          <span>NASSCOM & MeitY (FutureSkills Prime)</span>
+          <span>NASSCOM &amp; MeitY (FutureSkills Prime)</span>
         </div>
         <div class="cert-item">
           <div class="cert-item-title">
@@ -598,7 +720,7 @@
               LinkedIn Proof
             </a>
           </div>
-          <span>µLearn IDK & INOVUS LABS IEDC</span>
+          <span>µLearn IDK &amp; INOVUS LABS IEDC</span>
         </div>
         <div class="cert-item">
           <div class="cert-item-title">
@@ -608,7 +730,7 @@
               LinkedIn Proof
             </a>
           </div>
-          <span>NoviTech R&D</span>
+          <span>NoviTech R&amp;D</span>
         </div>
       </div>
     </section>
@@ -633,22 +755,22 @@
     <!-- Achievements -->
     <section>
       <h2>Achievements</h2>
-      <ul>
-        <li>
+      <div style="display: flex; flex-direction: column; gap: 3px; font-size: 8.1pt;">
+        <div class="single-sentence">
           <strong>Google Prompt Wars:</strong> Participated with <em>Aether Carbon</em>, an AI-augmented environmental tracking tool
           <a class="proof-link proof-linkedin" href="https://www.linkedin.com/posts/vibhath-t-k-360b2525a_promptwars-hack2skill-googlefordevelopers-ugcPost-7474357143165390848-TXll/" target="_blank">
             <svg class="proof-icon" viewBox="0 0 24 24" fill="#0a66c2"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
             LinkedIn Post
           </a>
-        </li>
-        <li>
-          <strong>Open Source:</strong> Published and maintained 18 public repositories on GitHub across systems, AI, and web tools
+        </div>
+        <div class="single-sentence">
+          <strong>Open Source Developer:</strong> Published and maintained 19 public repositories on GitHub across systems, AI, and web tools
           <a class="proof-link proof-github" href="https://github.com/Vibhathcross" target="_blank">
             <svg class="proof-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
             GitHub Repos
           </a>
-        </li>
-      </ul>
+        </div>
+      </div>
     </section>
   </div>
 
