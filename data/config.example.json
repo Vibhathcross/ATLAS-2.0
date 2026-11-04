@@ -1,0 +1,36 @@
+{
+  "brain_mode": "predefined",
+  "listening_mode": false,
+  "voice_output": true,
+  "biometrics": {
+    "enabled": false,
+    "enrolled": false,
+    "similarity_threshold": 0.72,
+    "profile_file": "voice_profile.npy"
+  },
+  "llm": {
+    "provider": "gemini",
+    "gemini_api_key": "",
+    "gemini_model": "gemini-1.5-flash",
+    "openrouter_api_key": "",
+    "openrouter_model": "google/gemini-2.0-flash-exp:free",
+    "freellmapi_url": "https://api.freellmapi.com/v1",
+    "freellmapi_key": "",
+    "freellmapi_model": "gpt-3.5-turbo",
+    "ollama_url": "http://localhost:11434",
+    "ollama_model": "llama3",
+    "system_prompt": "You are ATLAS 2.0, an advanced, highly capable autonomous desktop AI assistant."
+  },
+  "tts": {
+    "voice": "en-AU-WilliamMultilingualNeural",
+    "rate": "+0%",
+    "pitch": "-5Hz"
+  },
+  "telegram": {
+    "enabled": false,
+    "token": "",
+    "allowed_chat_id": ""
+  },
+  "telegram_queue_access": true,
+  "antigravity_mode": true
+}

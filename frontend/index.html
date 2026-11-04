@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATLAS 2.0</title>
+  <link rel="icon" type="image/x-icon" href="/static/assets/atlas.ico">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Three.js Local Offline Bundle -->
+  <script src="/static/js/three.min.js"></script>
+</head>
+<body>
+  <div id="app-container">
+    <!-- Starfield Galaxy Background Layer -->
+    <div class="galaxy"></div>
+
+    <!-- Top-Left Expandable Toggle Panel -->
+    <div id="quick-toggles" class="toggles-container">
+      <div class="toggles-header" id="toggles-expand-btn" title="Quick Controls & Toggles">
+        <svg class="toggle-icon" viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" fill="none" stroke-width="2">
+          <polyline points="13 17 18 12 13 7"></polyline>
+          <polyline points="6 17 11 12 6 7"></polyline>
+        </svg>
+        <span class="toggles-title">CONTROLS</span>
+        <button id="quick-fullscreen-btn" class="quick-fs-btn" title="Toggle Full Screen (F11)">
+          <svg class="fs-icon-enter" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+          </svg>
+          <svg class="fs-icon-exit" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" style="display:none;">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="toggles-body" id="toggles-list">
+        <!-- Toggle 1: Full Screen Mode (at 1st position) -->
+        <div class="toggle-item" title="Toggle Full Screen Window (or F11)">
+          <div class="toggle-info">
+            <span class="toggle-label">Full Screen</span>
+            <span class="toggle-sub" id="fullscreen-mode-desc">Windowed</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-fullscreen">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <!-- Toggle 2: Brain Mode -->
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <span class="toggle-label">Brain Mode</span>
+            <span class="toggle-sub" id="brain-mode-desc">AI Brain</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-brain-mode" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <!-- Toggle 2: Listening Mode -->
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <span class="toggle-label">Listening</span>
+            <span class="toggle-sub" id="listening-mode-desc">Off</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-listening-mode">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <!-- Toggle 3: Voice Output -->
+        <div class="toggle-item">
+          <div class="toggle-info">
+            <span class="toggle-label">Voice Output</span>
+            <span class="toggle-sub" id="voice-output-desc">Active</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-voice-output" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <!-- Toggle 4: Boss Focus Mode (Speaker Biometrics Verification) -->
+        <div class="toggle-item" title="Only respond when spoken voice matches Boss's voice profile">
+          <div class="toggle-info">
+            <span class="toggle-label">Boss Focus</span>
+            <span class="toggle-sub" id="commander-focus-desc">Voice Lock Off</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-commander-focus">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <!-- Toggle 5: Voice Barge-in / Interruption Mode -->
+        <div class="toggle-item" title="Cut off Atlas speaking immediately when you speak and execute new command">
+          <div class="toggle-info">
+            <span class="toggle-label">Voice Barge-in</span>
+            <span class="toggle-sub" id="barge-in-desc">Active</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-barge-in" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <!-- Toggle 6: Antigravity Mode (Direct Agent Dictation) -->
+        <div class="toggle-item" title="Automatically type and dispatch commands directly into Antigravity IDE Agent chat">
+          <div class="toggle-info">
+            <span class="toggle-label">Antigravity Mode</span>
+            <span class="toggle-sub" id="antigravity-mode-desc">Direct to Agent Off</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-antigravity-mode">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <!-- Toggle 7: Message Queue Access (30s Paced Execution) -->
+        <div class="toggle-item" title="Perform queued messages on Telegram (not executed yet) on a 30s time gap one after another">
+          <div class="toggle-info">
+            <span class="toggle-label">Message Queue Access</span>
+            <span class="toggle-sub" id="telegram-queue-desc">Queue Access Off</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggle-telegram-queue">
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top-Right Floating Control Panel Button -->
+    <div id="control-panel-btn" class="floating-btn" title="Open Settings & Control Panel">
+      <img src="/static/assets/logo.png" alt="ATLAS Logo" class="btn-logo">
+      <span class="btn-glow"></span>
+    </div>
+
+    <!-- Middle-Left Floating Arrow: Predefined Commands -->
+    <div id="drawer-toggle-left" class="edge-drawer-arrow arrow-left" title="Predefined Actions Catalog">
+      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </div>
+
+    <!-- Middle-Right Floating Arrow: Chat & Response History -->
+    <div id="drawer-toggle-right" class="edge-drawer-arrow arrow-right" title="Command & Response History">
+      <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </div>
+
+    <!-- Center Workspace: 3D Cellular Rotating Blob & Typing Space -->
+    <main id="stage">
+      <div id="blob-canvas-container"></div>
+      
+      <!-- Cosmic Interactive Typing Bar -->
+      <div class="cosmic-input-wrapper">
+        <div id="search-container">
+          <div class="nebula"></div>
+          <div class="starfield"></div>
+          <div class="stardust"></div>
+          <div class="cosmic-ring"></div>
+
+          <div id="chat-img-preview-bar" class="chat-img-preview-bar" style="display: none;">
+            <div class="img-preview-thumb-container">
+              <img id="chat-img-preview-thumb" src="" alt="preview" />
+              <div id="remove-img-preview-btn" title="Remove attached image">✕</div>
+            </div>
+            <div id="chat-img-preview-name" class="img-preview-name">image.png</div>
+          </div>
+
+          <div id="main">
+            <input
+              id="atlas-cmd-input"
+              class="input"
+              name="text"
+              type="text"
+              placeholder="Command ATLAS or explore..."
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <div id="cosmic-glow"></div>
+            <div class="wormhole-border"></div>
+
+            <!-- Hidden File Input for Image Attachments -->
+            <input type="file" id="chat-img-file-input" accept="image/*" style="display: none;" />
+
+            <!-- Image Attachment Button -->
+            <div id="attach-img-btn" class="clickable-icon" title="Attach Image or Screenshot (or paste with Ctrl+V)">
+              <svg stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="#a9c7ff" fill="none" height="18" width="18" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </div>
+            
+            <!-- Emergency Stop Button -->
+            <div id="stop-processing-btn" class="clickable-icon" title="Immediate Stop / Abandon (Esc)">
+              <svg id="stop-btn-svg" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="#ff3366" fill="#ff3366" height="18" width="18" viewBox="0 0 24 24">
+                <rect x="4" y="4" width="16" height="16" rx="3" ry="3"></rect>
+              </svg>
+            </div>
+
+            <!-- Wormhole Send Button -->
+            <div id="wormhole-icon" title="Execute Command (Enter)">
+              <svg id="wormhole-send-svg" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="#a9c7ff" fill="none" height="20" width="20" viewBox="0 0 24 24">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </div>
+
+            <!-- Voice Typing Microphone Toggle Button -->
+            <div id="search-icon" class="clickable-icon" title="Toggle Live Voice Typing">
+              <svg id="mic-typing-svg" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="url(#cosmic-search)" fill="none" height="22" width="22" viewBox="0 0 24 24">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+                <defs>
+                  <linearGradient gradientTransform="rotate(45)" id="cosmic-search">
+                    <stop stop-color="#a9c7ff" offset="0%"></stop>
+                    <stop stop-color="#00f2fe" offset="100%"></stop>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Minimalist State Notating Bar -->
+      <div id="state-bar" class="state-pill state-idle">
+        <span class="state-indicator-dot"></span>
+        <span id="state-text">SYSTEM READY</span>
+        <span id="state-detail" class="state-subtext"></span>
+      </div>
+    </main>
+
+    <!-- LEFT DRAWER: Predefined Actions Catalog -->
+    <div id="drawer-left" class="side-drawer drawer-left-panel">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <span class="drawer-icon">⚡</span>
+          <h3>PREDEFINED ACTIONS</h3>
+        </div>
+        <button id="close-drawer-left" class="close-drawer-btn">&times;</button>
+      </div>
+      <div class="drawer-body">
+        <p class="drawer-intro">Click any command card to auto-execute or speak it directly:</p>
+
+        <!-- Category: Power -->
+        <div class="catalog-category">
+          <div class="category-title">SYSTEM POWER & SECURITY</div>
+          <div class="command-card" data-cmd="shutdown">
+            <div class="cmd-trigger">"Shutdown" / "Power off"</div>
+            <div class="cmd-desc">Gracefully initiates system shutdown with 10-second grace buffer.</div>
+          </div>
+          <div class="command-card" data-cmd="cancel shutdown">
+            <div class="cmd-trigger">"Cancel shutdown" / "Abort shutdown"</div>
+            <div class="cmd-desc">Cancels any scheduled system shutdown timer.</div>
+          </div>
+          <div class="command-card" data-cmd="restart">
+            <div class="cmd-trigger">"Restart" / "Reboot"</div>
+            <div class="cmd-desc">Reboots the operating system safely.</div>
+          </div>
+          <div class="command-card" data-cmd="lock computer">
+            <div class="cmd-trigger">"Lock computer" / "Lock screen"</div>
+            <div class="cmd-desc">Instantly locks the Windows user session.</div>
+          </div>
+          <div class="command-card" data-cmd="sleep">
+            <div class="cmd-trigger">"Sleep computer" / "Go to sleep"</div>
+            <div class="cmd-desc">Places the computer into low-power sleep state.</div>
+          </div>
+        </div>
+
+        <!-- Category: Desktop & Windows -->
+        <div class="catalog-category">
+          <div class="category-title">DESKTOP & WINDOW WORKSPACE</div>
+          <div class="command-card" data-cmd="clear all apps">
+            <div class="cmd-trigger">"Clear all apps" / "Clear screen"</div>
+            <div class="cmd-desc">Minimizes all clutter and returns to a clean desktop view.</div>
+          </div>
+          <div class="command-card" data-cmd="show desktop">
+            <div class="cmd-trigger">"Show desktop" / "Minimize all"</div>
+            <div class="cmd-desc">Toggles desktop view using Windows shortcut hotkey.</div>
+          </div>
+        </div>
+
+        <!-- Category: Apps -->
+        <div class="catalog-category">
+          <div class="category-title">APPLICATION CONTROLLER</div>
+          <div class="command-card" data-cmd="open chrome">
+            <div class="cmd-trigger">"Open Chrome" / "Launch browser"</div>
+            <div class="cmd-desc">Launches Google Chrome browser.</div>
+          </div>
+          <div class="command-card" data-cmd="open code">
+            <div class="cmd-trigger">"Open Code" / "Launch VS Code"</div>
+            <div class="cmd-desc">Launches Visual Studio Code workspace.</div>
+          </div>
+          <div class="command-card" data-cmd="open spotify">
+            <div class="cmd-trigger">"Open Spotify"</div>
+            <div class="cmd-desc">Opens the Spotify desktop music player.</div>
+          </div>
+          <div class="command-card" data-cmd="open notepad">
+            <div class="cmd-trigger">"Open Notepad"</div>
+            <div class="cmd-desc">Opens Windows Notepad for quick text drafting.</div>
+          </div>
+          <div class="command-card" data-cmd="open calc">
+            <div class="cmd-trigger">"Open Calculator" / "Open Calc"</div>
+            <div class="cmd-desc">Launches Windows Calculator.</div>
+          </div>
+          <div class="command-card" data-cmd="close chrome">
+            <div class="cmd-trigger">"Close Chrome" / "Close Notepad"</div>
+            <div class="cmd-desc">Terminates active process instances of the target application.</div>
+          </div>
+        </div>
+
+        <!-- Category: Media & Volume -->
+        <div class="catalog-category">
+          <div class="category-title">AUDIO & VOLUME</div>
+          <div class="command-card" data-cmd="volume up">
+            <div class="cmd-trigger">"Volume up" / "Louder"</div>
+            <div class="cmd-desc">Increases master output volume by 5 steps.</div>
+          </div>
+          <div class="command-card" data-cmd="volume down">
+            <div class="cmd-trigger">"Volume down" / "Quieter"</div>
+            <div class="cmd-desc">Decreases master output volume by 5 steps.</div>
+          </div>
+          <div class="command-card" data-cmd="mute">
+            <div class="cmd-trigger">"Mute" / "Unmute"</div>
+            <div class="cmd-desc">Toggles master audio mute state.</div>
+          </div>
+        </div>
+
+        <!-- Category: Keyboard & System Maintenance -->
+        <div class="catalog-category">
+          <div class="category-title">KEYBOARD & SYSTEM REFRESH</div>
+          <div class="command-card" data-cmd="autokeyboard ctrl+shift+esc">
+            <div class="cmd-trigger">"autokeyboard &lt;keys&gt;"</div>
+            <div class="cmd-desc">Press any key or combination up to 10 keys (e.g. autokeyboard win+d, alt+f4, ctrl+c).</div>
+          </div>
+          <div class="command-card" data-cmd="f:review current status and proceed">
+            <div class="cmd-trigger">"f:&lt;command&gt;"</div>
+            <div class="cmd-desc">Force Send Now to Antigravity immediately without waiting for current running task.</div>
+          </div>
+          <div class="command-card" data-cmd="#anti">
+            <div class="cmd-trigger">"#anti" / "toggle antigravity"</div>
+            <div class="cmd-desc">Toggles Antigravity Mode on/off instantly without opening Settings.</div>
+          </div>
+          <div class="command-card" data-cmd="selfrefresh">
+            <div class="cmd-trigger">"selfrefresh" / "restart atlas"</div>
+            <div class="cmd-desc">Gracefully restarts ATLAS 2.0 and reloads all updated features.</div>
+          </div>
+        </div>
+
+        <!-- Category: Diagnostics -->
+        <div class="catalog-category">
+          <div class="category-title">SYSTEM DIAGNOSTICS</div>
+          <div class="command-card" data-cmd="system status">
+            <div class="cmd-trigger">"System status" / "System health"</div>
+            <div class="cmd-desc">Queries real-time CPU %, RAM usage (GB/total), and battery level.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT DRAWER: Chat & Response Stream -->
+    <div id="drawer-right" class="side-drawer drawer-right-panel">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <span class="drawer-icon">💬</span>
+          <h3>COMMANDS & RESPONSES</h3>
+        </div>
+        <div class="drawer-header-actions">
+          <button id="clear-chat-btn" class="icon-action-btn" title="Clear Chat Stream">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
+          <button id="close-drawer-right" class="close-drawer-btn">&times;</button>
+        </div>
+      </div>
+      <div class="drawer-body chat-stream" id="chat-messages-container">
+        <!-- Messages injected dynamically -->
+        <div class="chat-placeholder">
+          <div class="placeholder-icon">🛰️</div>
+          <p>No messages yet.<br>Type in the cosmic bar or speak a voice command!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden audio element for voice playback -->
+    <audio id="tts-player" style="display: none;"></audio>
+
+    <!-- Settings & Control Panel Drawer / Modal -->
+    <div id="settings-modal" class="modal-overlay">
+      <div class="modal-content glass-panel">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <img src="/static/assets/logo.png" alt="Logo" class="modal-logo">
+            <h2>ATLAS 2.0 CONTROL CENTER</h2>
+          </div>
+          <button id="close-settings-btn" class="close-btn">&times;</button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="modal-tabs">
+          <button class="tab-btn active" data-tab="tab-biometrics">Voice Security</button>
+          <button class="tab-btn" data-tab="tab-llm">LLM & Intelligence</button>
+          <button class="tab-btn" data-tab="tab-voice">Voice Output (TTS)</button>
+          <button class="tab-btn" data-tab="tab-telegram">Telegram Remote</button>
+          <button class="tab-btn" data-tab="tab-logs">Action Logs (SQLite)</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- TAB 1: Resemblyzer Voice Biometrics -->
+          <div class="tab-content active" id="tab-biometrics">
+            <div class="section-card">
+              <h3>Resemblyzer Speaker Biometrics</h3>
+              <p class="section-desc">Train ATLAS to recognize your distinct voice embeddings so it executes only commands from your voice.</p>
+              
+              <div class="setting-row">
+                <label>Enforce Voice Lock</label>
+                <label class="switch">
+                  <input type="checkbox" id="biometrics-enabled">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+
+              <div class="setting-row">
+                <label>Similarity Threshold (Default: 0.72)</label>
+                <div class="range-wrap">
+                  <input type="range" id="biometrics-threshold" min="0.50" max="0.95" step="0.01" value="0.72">
+                  <span id="threshold-val">0.72</span>
+                </div>
+              </div>
+
+              <div class="enrollment-box">
+                <h4>Voice Enrollment Studio</h4>
+                <p>Record 1 to 3 speech samples (e.g. "Atlas activate system", "Check computer status", "I am the owner") or select audio files directly:</p>
+                <div class="enroll-steps">
+                  <button id="record-sample-btn" class="btn btn-primary">🎙️ Record Sample (<span id="sample-count">0</span>)</button>
+                  <label class="btn btn-secondary" style="cursor: pointer; margin-bottom: 0; display: inline-flex; align-items: center; gap: 6px;">
+                    📁 Upload Audio File(s)
+                    <input type="file" id="voice-upload-input" accept="audio/*" multiple style="display: none;">
+                  </label>
+                  <button id="save-enrollment-btn" class="btn btn-success">Enroll Voice Profile</button>
+                  <button id="reset-profile-btn" class="btn btn-danger">Delete Enrolled Profile</button>
+                </div>
+                
+                <div id="samples-preview-list" class="samples-preview-container"></div>
+                <div id="enrollment-status" class="status-msg"></div>
+              </div>
+
+              <!-- Live Voice Match Tester -->
+              <div class="tester-box">
+                <h4>Voice Match Live Tester</h4>
+                <p>Speak a phrase to verify if ATLAS recognizes your voice in real time:</p>
+                <div class="tester-controls">
+                  <button id="test-match-btn" class="btn btn-secondary">🎙️ Test My Voice Match</button>
+                  <span id="tester-status" class="status-msg" style="margin: 0;"></span>
+                </div>
+                
+                <!-- Visual Confidence Gauge -->
+                <div id="match-gauge-container" class="match-gauge-wrapper" style="display: none;">
+                  <div class="gauge-labels">
+                    <span id="gauge-result-badge" class="badge">RESULT</span>
+                    <span id="gauge-score-text">0% Similarity</span>
+                  </div>
+                  <div class="gauge-track">
+                    <div id="gauge-fill-bar" class="gauge-fill"></div>
+                    <div id="gauge-threshold-line" class="gauge-threshold-pin" title="Threshold"></div>
+                  </div>
+                  <div class="gauge-sub">
+                    <span>0%</span>
+                    <span id="gauge-threshold-label">Threshold: 72%</span>
+                    <span>100%</span>
+                  </div>
+                  <div id="gauge-detail-msg" class="gauge-detail"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: Multi-LLM Hub & System Prompt -->
+          <div class="tab-content" id="tab-llm">
+            <div class="section-card">
+              <h3>Multi-Provider LLM Engine</h3>
+              <div class="form-group">
+                <label>Provider</label>
+                <select id="llm-provider" class="form-select">
+                  <option value="gemini">Google Gemini</option>
+                  <option value="openrouter">OpenRouter (DeepSeek / Claude / Llama)</option>
+                  <option value="freellmapi">FreeLLMAPI / Custom OpenAI-Compatible</option>
+                  <option value="ollama">Local Ollama</option>
+                </select>
+              </div>
+
+              <!-- Provider Configs -->
+              <div id="config-gemini" class="provider-config">
+                <div class="form-group">
+                  <label>Gemini API Key</label>
+                  <input type="password" id="gemini-api-key" class="form-input" placeholder="AIzaSy...">
+                </div>
+                <div class="form-group">
+                  <label>Model</label>
+                  <input type="text" id="gemini-model" class="form-input" value="gemini-1.5-flash">
+                </div>
+              </div>
+
+              <div id="config-openrouter" class="provider-config" style="display: none;">
+                <div class="form-group">
+                  <label>OpenRouter API Key</label>
+                  <input type="password" id="openrouter-api-key" class="form-input" placeholder="sk-or-v1-...">
+                </div>
+                <div class="form-group">
+                  <label>Model</label>
+                  <input type="text" id="openrouter-model" class="form-input" value="google/gemini-2.0-flash-exp:free">
+                </div>
+              </div>
+
+              <div id="config-freellmapi" class="provider-config" style="display: none;">
+                <div class="form-group">
+                  <label>Endpoint URL</label>
+                  <input type="text" id="freellmapi-url" class="form-input" value="https://api.freellmapi.com/v1">
+                </div>
+                <div class="form-group">
+                  <label>API Key (Optional)</label>
+                  <input type="password" id="freellmapi-key" class="form-input" placeholder="Optional key">
+                </div>
+                <div class="form-group">
+                  <label>Model</label>
+                  <input type="text" id="freellmapi-model" class="form-input" value="gpt-3.5-turbo">
+                </div>
+              </div>
+
+              <div id="config-ollama" class="provider-config" style="display: none;">
+                <div class="form-group">
+                  <label>Ollama Base URL</label>
+                  <input type="text" id="ollama-url" class="form-input" value="http://localhost:11434">
+                </div>
+                <div class="form-group">
+                  <label>Model</label>
+                  <input type="text" id="ollama-model" class="form-input" value="llama3">
+                </div>
+              </div>
+
+              <div class="btn-group">
+                <button id="test-llm-btn" class="btn btn-secondary">⚡ Test Connection & Validity</button>
+                <span id="llm-test-result" class="test-feedback"></span>
+              </div>
+
+              <div class="form-group mt-3">
+                <label>System Persona & Prompt</label>
+                <textarea id="system-prompt" class="form-textarea" rows="4"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: Voice Output (TTS) -->
+          <div class="tab-content" id="tab-voice">
+            <div class="section-card">
+              <h3>High-Fidelity Neural Voice (Edge-TTS)</h3>
+              <p class="section-desc">Zero-cost ultra-natural speech synthesis. Choose your assistant persona voice.</p>
+              
+              <div class="form-group">
+                <label>Select Voice Persona</label>
+                <select id="tts-voice-select" class="form-select"></select>
+              </div>
+
+              <div class="setting-row">
+                <label>Speech Rate</label>
+                <select id="tts-rate-select" class="form-select-sm">
+                  <option value="-20%">Slow (-20%)</option>
+                  <option value="+0%" selected>Normal (Default)</option>
+                  <option value="+15%">Fast (+15%)</option>
+                  <option value="+30%">Very Fast (+30%)</option>
+                </select>
+              </div>
+
+              <div class="setting-row">
+                <label>Pitch Offset</label>
+                <select id="tts-pitch-select" class="form-select-sm">
+                  <option value="-5Hz">Deeper (-5Hz)</option>
+                  <option value="+0Hz" selected>Natural (+0Hz)</option>
+                  <option value="+5Hz">Higher (+5Hz)</option>
+                </select>
+              </div>
+
+              <div class="btn-group mt-3">
+                <button id="test-voice-btn" class="btn btn-secondary">🔊 Play Test Sample</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: Telegram Remote Bridge -->
+          <div class="tab-content" id="tab-telegram">
+            <div class="section-card">
+              <h3>Telegram Remote Bot Control</h3>
+              <p class="section-desc">Control ATLAS 2.0 anywhere from your phone via Telegram.</p>
+
+              <div class="setting-row">
+                <label>Enable Telegram Bridge</label>
+                <label class="switch">
+                  <input type="checkbox" id="telegram-enabled">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+
+              <div class="form-group">
+                <label>Bot API Token (from @BotFather)</label>
+                <input type="password" id="telegram-token" class="form-input" placeholder="123456789:ABCdefGHIjklMNO...">
+              </div>
+
+              <div class="form-group">
+                <label>Authorized Chat ID (Optional whitelist)</label>
+                <input type="text" id="telegram-chat-id" class="form-input" placeholder="e.g. 987654321">
+              </div>
+
+              <div class="btn-group">
+                <button id="test-telegram-btn" class="btn btn-secondary">🛰️ Test Bot Connectivity</button>
+                <span id="telegram-test-result" class="test-feedback"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 5: SQLite Action Logs -->
+          <div class="tab-content" id="tab-logs">
+            <div class="section-card">
+              <div class="logs-header">
+                <h3>Execution Audit Logs (SQLite)</h3>
+                <div class="logs-actions">
+                  <button id="refresh-logs-btn" class="btn btn-sm btn-secondary">Refresh</button>
+                  <button id="clear-logs-btn" class="btn btn-sm btn-danger">Clear All</button>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="logs-table">
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Source</th>
+                      <th>Command</th>
+                      <th>Route</th>
+                      <th>Status</th>
+                      <th>Voice Match</th>
+                      <th>Latency</th>
+                    </tr>
+                  </thead>
+                  <tbody id="logs-tbody">
+                    <tr><td colspan="7" class="text-center">Loading logs...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="save-settings-btn" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/blob3d.js"></script>
+  <script src="/static/js/settings.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
