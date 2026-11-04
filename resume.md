@@ -7,8 +7,7 @@ Idukki, Kerala, India | [vibhathcross@gmail.com](mailto:vibhathcross@gmail.com)
 
 ## Technical Skills
 
-* **Languages:** Python, JavaScript (ES6+), TypeScript, C, SQL, HTML5, CSS3
-* **Frameworks & Web:** React 19, Next.js, Vite, Tailwind CSS, FastAPI, Flask, Electron, PyQt6
+* **Languages:** Python, JavaScript (ES6+), C, SQL, HTML5, CSS3
 * **AI & Machine Learning:** LLM APIs (Gemini, Claude, Ollama), MediaPipe, OpenCV, ChromaDB, Resemblyzer, Q-Learning
 * **Databases & Tools:** PostgreSQL (Supabase), SQLite, MongoDB, Git, Linux, Windows, FFmpeg, Postman
 
