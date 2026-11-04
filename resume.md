@@ -86,6 +86,8 @@ Completed structured web development internship delivering full-stack and fronte
 
 ## Certifications & Proofs
 
+* **Cyber First Responder Awareness Programme** — Kerala Police Cyber Division  
+  [[LinkedIn Credential Proof](https://www.linkedin.com/posts/vibhath-t-k-360b2525a_certificate-of-course-completion-ugcPost-7523623685098979328-VQek/)]
 * **Web Development Internship Certificate** — CodSoft  
   [[Certificate Verification Proof](https://www.linkedin.com/in/vibhath-t-k-360b2525a/details/certifications/)]
 * **Introduction to Generative AI** — Google Cloud Training (Coursera)  
@@ -111,5 +113,6 @@ Government Engineering College, Idukki — APJ Abdul Kalam Technological Univers
 
 ## Achievements
 
+* **CLICK Cyber Resilience Initiative:** Delegate at the State-Level CLICK Inauguration (Rajiv Gandhi Indoor Stadium, Kochi) organized by Kerala Police Cyber Division [[LinkedIn Verification](https://www.linkedin.com/posts/vibhath-t-k-360b2525a_cybersafekeralam-click-cyberfirstresponder-share-7523625330105044992-aWX5/)].
 * **Google Prompt Wars:** Participated with *Aether Carbon*, a multimodal AI carbon tracking application [[LinkedIn Verification](https://www.linkedin.com/posts/vibhath-t-k-360b2525a_promptwars-hack2skill-googlefordevelopers-ugcPost-7474357143165390848-TXll/)].
 * **Open Source Developer:** Created and published 19 public repositories on GitHub across systems, AI, and web tools [[GitHub Profile](https://github.com/Vibhathcross)].
