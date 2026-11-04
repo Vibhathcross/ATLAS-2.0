@@ -66,11 +66,6 @@ Designed a physics-backed Next.js and React 19 engineering portfolio featuring G
 [[GitHub Code](https://github.com/Vibhathcross/Aerostream)]  
 Developed a desktop media player in Electron, React 19, and Vite that uses yt-dlp to deliver ad-free streaming, audio conversion, and local offline vault caching.
 
-### **Secure-Access-Gateway**
-*HTML5, CSS3, JavaScript, Web Audio API*  
-[[GitHub Code](https://github.com/Vibhathcross/Secure-Access-Gateway)] | [[Live Demo](https://vibhathcross.github.io/Secure-Access-Gateway/)]  
-Engineered an interactive cyber authentication simulation featuring procedural audio synthesis via the Web Audio API, fullscreen locking, and buffer tracking.
-
 ### **Padakkalam — Cultural Festival Web Portal**
 *HTML5, CSS3, JavaScript, JSON*  
 [[GitHub Code](https://github.com/Vibhathcross/Padakkalam)] | [[Live Site](https://vibhathcross.github.io/Padakkalam/)]  
