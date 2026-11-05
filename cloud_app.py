@@ -100,6 +100,13 @@ async def get_mia_status():
         "stats": stats
     }
 
+@app.get("/api/mia/recent")
+async def get_recent_mia_emails(limit: int = 5):
+    """Returns the latest N emails from MongoDB Atlas."""
+    _sync_cloud_settings()
+    emails = mia_storage.get_recent_emails(limit)
+    return {"status": "ok", "emails": emails, "count": len(emails)}
+
 @app.post("/api/mia/ingest")
 async def ingest_email_api(payload: Dict[str, Any]):
     """Receives email payloads sent by Google Apps Script syncEmailsToMIA webhook."""

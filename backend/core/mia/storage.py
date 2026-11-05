@@ -374,6 +374,23 @@ class MIAStorage:
             cursor.execute("SELECT * FROM emails ORDER BY received_at DESC")
             return [self._parse_row(r) for r in cursor.fetchall()]
 
+    def get_recent_emails(self, limit: int = 5) -> List[Dict[str, Any]]:
+        mongo_client = self.get_mongo_client()
+        if mongo_client:
+            try:
+                from backend.config import config_manager
+                db_name = config_manager.get("mia.mongodb_db", "atlas_mia")
+                docs = list(mongo_client[db_name].emails.find({}, {"_id": 0}).sort("received_at", -1).limit(limit))
+                if docs:
+                    return docs
+            except Exception as e:
+                print(f"[MIA Storage] get_recent_emails error: {e}")
+
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM emails ORDER BY received_at DESC LIMIT ?", (limit,))
+            return [self._parse_row(r) for r in cursor.fetchall()]
+
     def search_by_sender(self, query: str) -> Tuple[List[Dict[str, Any]], List[Dict[str, str]]]:
         """
         Searches sender_name, sender_email, and sender_domain with case-insensitivity,

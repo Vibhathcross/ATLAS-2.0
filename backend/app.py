@@ -409,6 +409,12 @@ async def get_mia_status():
         "stats": stats
     }
 
+@app.get("/api/mia/recent")
+async def get_recent_mia_emails(limit: int = 5):
+    """Returns the latest N emails from MongoDB Atlas (or local store) with summaries and timestamps."""
+    emails = await asyncio.to_thread(mia_storage.get_recent_emails, limit)
+    return {"status": "ok", "emails": emails, "count": len(emails)}
+
 @app.post("/api/mia/seed")
 async def seed_mia(payload: Dict[str, Any] = None):
     force = bool((payload or {}).get("force", False))

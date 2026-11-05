@@ -47,6 +47,7 @@ class AtlasApp {
     this.initWebSocket();
     this.initAudioAnalyzer();
     this.initMiaFloatingDot();
+    this.initFloatingMiaFlyout();
     this.loadRecentChatHistory();
 
     // Audio context unlock & background wake-word listening
@@ -561,11 +562,208 @@ class AtlasApp {
     } catch (e) {}
   }
 
+  playPopSound() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      // Crisp bubbly frequency drop
+      osc.frequency.setValueAtTime(860, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.11);
+
+      gain.gain.setValueAtTime(0.32, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.13);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.14);
+    } catch (e) {
+      console.warn("Pop sound error:", e);
+    }
+  }
+
+  initFloatingMiaFlyout() {
+    const btn = document.getElementById("mia-floating-btn");
+    const panel = document.getElementById("mia-flyout-panel");
+    const closeBtn = document.getElementById("mia-flyout-close");
+    const refreshBtn = document.getElementById("mia-flyout-refresh");
+    const openHubBtn = document.getElementById("mia-flyout-open-hub");
+
+    if (btn && panel) {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isHidden = panel.style.display === "none" || !panel.style.display;
+        if (isHidden) {
+          panel.style.display = "flex";
+          this.loadRecentMiaSummaries();
+        } else {
+          panel.style.display = "none";
+        }
+      });
+
+      if (closeBtn) {
+        closeBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          panel.style.display = "none";
+        });
+      }
+
+      if (refreshBtn) {
+        refreshBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.loadRecentMiaSummaries();
+        });
+      }
+
+      if (openHubBtn) {
+        openHubBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          panel.style.display = "none";
+          const cpBtn = document.getElementById("control-panel-btn");
+          if (cpBtn) cpBtn.click();
+          const miaTabBtn = document.getElementById("tab-btn-mia");
+          if (miaTabBtn) miaTabBtn.click();
+        });
+      }
+
+      // Close when clicking outside panel
+      document.addEventListener("click", (e) => {
+        if (panel.style.display === "flex" && !panel.contains(e.target) && !btn.contains(e.target)) {
+          panel.style.display = "none";
+        }
+      });
+    }
+  }
+
+  async loadRecentMiaSummaries() {
+    const listContainer = document.getElementById("mia-recent-list");
+    if (!listContainer) return;
+
+    listContainer.innerHTML = '<div class="mia-loading-skeleton">Loading latest email digests from MongoDB...</div>';
+
+    try {
+      const res = await fetch("/api/mia/recent?limit=5");
+      const data = await res.json();
+      const emails = data.emails || [];
+
+      if (emails.length === 0) {
+        listContainer.innerHTML = '<div class="mia-empty-state">No emails recorded yet in MongoDB Atlas.</div>';
+        return;
+      }
+
+      const escapeHtml = (str) => {
+        if (!str) return "";
+        return String(str).replace(/[&<>"']/g, (m) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+        }[m]));
+      };
+
+      const formatTime = (isoStr) => {
+        if (!isoStr) return "";
+        try {
+          const d = new Date(isoStr);
+          if (isNaN(d.getTime())) return isoStr;
+          const now = new Date();
+          const diffMs = now - d;
+          const diffMins = Math.floor(diffMs / 60000);
+          if (diffMins < 1) return "Just now";
+          if (diffMins < 60) return `${diffMins}m ago`;
+          const diffHours = Math.floor(diffMins / 60);
+          if (diffHours < 24) return `${diffHours}h ago`;
+          return d.toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+        } catch {
+          return isoStr;
+        }
+      };
+
+      listContainer.innerHTML = emails.map(em => {
+        const senderName = em.sender_name || (em.sender_email ? em.sender_email.split("@")[0] : "Unknown");
+        const senderDomain = em.sender_domain || (em.sender_email && em.sender_email.includes("@") ? em.sender_email.split("@")[1] : "");
+        const initial = (senderName.trim()[0] || "M").toUpperCase();
+        const subject = em.subject ? em.subject.trim() : "(No Subject)";
+        const summary = em.summary ? em.summary.trim() : "Summary extraction in progress...";
+        const topic = em.main_topic || "General";
+        const timeStr = formatTime(em.received_at);
+
+        return `
+          <div class="mia-mail-card">
+            <div class="mia-mail-top-row">
+              <div class="mia-mail-sender-box">
+                <div class="mia-avatar-circle">${escapeHtml(initial)}</div>
+                <div class="mia-sender-details">
+                  <span class="mia-mail-sender" title="${escapeHtml(em.sender_email || '')}">${escapeHtml(senderName)}</span>
+                  ${senderDomain ? `<span class="mia-mail-domain">@${escapeHtml(senderDomain)}</span>` : ""}
+                </div>
+              </div>
+              <span class="mia-mail-time" title="${escapeHtml(em.received_at || '')}">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: -1px;">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>${escapeHtml(timeStr)}
+              </span>
+            </div>
+
+            <div class="mia-mail-subject" title="${escapeHtml(subject)}">
+              ${escapeHtml(subject)}
+            </div>
+
+            <div class="mia-mail-summary">
+              <span class="mia-summary-label">DIGEST</span>
+              ${escapeHtml(summary)}
+            </div>
+
+            <div class="mia-mail-bottom-row">
+              <span class="mia-mail-topic">📁 ${escapeHtml(topic)}</span>
+              <span class="mia-mail-status-tag">✓ Ingested</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    } catch (e) {
+      console.warn("Failed to load recent MIA emails:", e);
+      listContainer.innerHTML = '<div class="mia-empty-state" style="color: #ef4444;">Error fetching from MongoDB. Ensure connection is active.</div>';
+    }
+  }
+
   handleMiaLiveStats(data) {
     if (!data) return;
     const stats = data.stats;
     if (stats) {
       const count = stats.total_emails;
+      
+      // Update floating top-right badge
+      const floatBadge = document.getElementById("mia-floating-badge");
+      if (floatBadge && count !== undefined) {
+        floatBadge.textContent = count;
+      }
+
+      // Check for incoming new mail arrival
+      if (count !== undefined && this._lastKnownEmailCount !== undefined && count > this._lastKnownEmailCount) {
+        this.playPopSound();
+        const floatBtn = document.getElementById("mia-floating-btn");
+        if (floatBtn) {
+          floatBtn.classList.remove("new-mail-blink");
+          void floatBtn.offsetWidth; // Trigger reflow
+          floatBtn.classList.add("new-mail-blink");
+          setTimeout(() => floatBtn.classList.remove("new-mail-blink"), 5500);
+        }
+
+        // Live refresh the flyout card if it's currently open
+        const flyout = document.getElementById("mia-flyout-panel");
+        if (flyout && flyout.style.display === "flex") {
+          this.loadRecentMiaSummaries();
+        }
+      }
+      if (count !== undefined) {
+        this._lastKnownEmailCount = count;
+      }
+
       const badgeCount = document.getElementById("mia-badge-count");
       if (badgeCount && count !== undefined) {
         const prev = badgeCount.dataset.count;

@@ -137,6 +137,42 @@
       <span class="mia-dot-label">MIA: NO LLM</span>
     </div>
 
+    <!-- Top-Right Floating MIA Intelligence Button -->
+    <div id="mia-floating-btn" class="mia-floating-action-btn" title="MIA Mail Intelligence — Click to view recent summaries">
+      <div class="mia-btn-inner">
+        <span class="mia-btn-icon">📬</span>
+        <span id="mia-floating-badge" class="mia-live-counter-badge">--</span>
+      </div>
+      <span class="mia-btn-glow-ring"></span>
+    </div>
+
+    <!-- Floating Flyout Panel: Recent Email Summaries -->
+    <div id="mia-flyout-panel" class="mia-flyout-card" style="display: none;">
+      <div class="mia-flyout-header">
+        <div class="mia-flyout-title-wrap">
+          <span class="mia-flyout-icon">📬</span>
+          <div>
+            <h4 class="mia-flyout-title">Mail Intelligence (MIA)</h4>
+            <span class="mia-flyout-sub" id="mia-flyout-status">● Live Cloud Sync</span>
+          </div>
+        </div>
+        <button id="mia-flyout-close" class="mia-flyout-close-btn" title="Close">×</button>
+      </div>
+      
+      <div class="mia-flyout-subheader">
+        <span>Latest 5 Ingested Emails</span>
+        <button id="mia-flyout-refresh" class="mia-flyout-refresh-btn" title="Refresh">↻ Refresh</button>
+      </div>
+
+      <div id="mia-recent-list" class="mia-recent-scroll-list">
+        <div class="mia-loading-skeleton">Fetching digests from MongoDB Atlas...</div>
+      </div>
+
+      <div class="mia-flyout-footer">
+        <button id="mia-flyout-open-hub" class="btn btn-secondary btn-sm" style="width: 100%; font-size: 11px;">Open Subagents Hub in Control Panel →</button>
+      </div>
+    </div>
+
     <!-- Top-Right Floating Control Panel Button -->
     <div id="control-panel-btn" class="floating-btn" title="Open Settings & Control Panel">
       <img src="/static/assets/logo.png" alt="ATLAS Logo" class="btn-logo">
