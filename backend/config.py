@@ -64,12 +64,27 @@ DEFAULT_CONFIG: Dict[str, Any] = {
 class ConfigManager:
     def __init__(self):
         DATA_DIR.mkdir(parents=True, exist_ok=True)
+        self.config = DEFAULT_CONFIG.copy()
         self.config = self.load()
+
+    def _apply_env_overrides(self, cfg: Dict[str, Any]):
+        mia = cfg.setdefault("mia", {})
+        if os.getenv("MONGODB_URI"):
+            mia["mongodb_uri"] = os.getenv("MONGODB_URI")
+        if os.getenv("MIA_API_KEY"):
+            mia["api_key"] = os.getenv("MIA_API_KEY")
+        if os.getenv("MIA_PROVIDER"):
+            mia["provider"] = os.getenv("MIA_PROVIDER")
+        if os.getenv("MIA_MODEL"):
+            mia["model"] = os.getenv("MIA_MODEL")
 
     def load(self) -> Dict[str, Any]:
         if not CONFIG_FILE.exists():
-            self.save(DEFAULT_CONFIG)
-            return DEFAULT_CONFIG.copy()
+            base = DEFAULT_CONFIG.copy()
+            self._apply_env_overrides(base)
+            self.config = base
+            self.save(base)
+            return base
         try:
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
                 loaded = json.load(f)
@@ -80,14 +95,18 @@ class ConfigManager:
                         merged[k].update(v)
                     else:
                         merged[k] = v
+                self._apply_env_overrides(merged)
                 return merged
         except Exception:
-            return DEFAULT_CONFIG.copy()
+            fallback = DEFAULT_CONFIG.copy()
+            self._apply_env_overrides(fallback)
+            return fallback
 
     def save(self, config_data: Dict[str, Any] = None) -> bool:
         if config_data is not None:
             # Preserve existing keys not included in partial updates
-            for k, v in self.config.items():
+            existing = getattr(self, "config", None) or {}
+            for k, v in existing.items():
                 if k not in config_data:
                     config_data[k] = v
             self.config = config_data
