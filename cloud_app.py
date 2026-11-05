@@ -75,8 +75,19 @@ async def health_check():
         "timestamp": time.time()
     }
 
+def _sync_cloud_settings():
+    """Dynamically applies any updated LLM or MIA settings saved from local Control Panel to MongoDB Atlas."""
+    try:
+        cloud_cfg = mia_storage.get_cloud_config()
+        if cloud_cfg and isinstance(cloud_cfg, dict):
+            local_mia = config_manager.config.setdefault("mia", {})
+            local_mia.update(cloud_cfg)
+    except Exception as e:
+        print(f"[MIA Cloud Settings Sync Warn]: {e}")
+
 @app.get("/api/mia/status")
 async def get_mia_status():
+    _sync_cloud_settings()
     has_llm, llm_msg = mia_agent.check_llm_status()
     stats = mia_storage.get_stats()
     mia_cfg = config_manager.get("mia", {})
@@ -93,6 +104,7 @@ async def get_mia_status():
 async def ingest_email_api(payload: Dict[str, Any]):
     """Receives email payloads sent by Google Apps Script syncEmailsToMIA webhook."""
     try:
+        _sync_cloud_settings()
         if not payload.get("email_id"):
             payload["email_id"] = payload.get("id") or f"email-cloud-{int(time.time() * 1000)}"
         record = await email_ingestion_service.ingest_email(payload)
@@ -104,6 +116,7 @@ async def ingest_email_api(payload: Dict[str, Any]):
 @app.post("/api/mia/query")
 async def query_mia_api(payload: Dict[str, Any]):
     """Queries stored email intelligence via natural language command."""
+    _sync_cloud_settings()
     cmd = payload.get("command", "")
     res = await mia_agent.execute(cmd)
     return res

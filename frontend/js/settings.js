@@ -104,6 +104,14 @@ class SettingsController {
   }
 
   initMiaEvents() {
+    const miaToggle = document.getElementById("subagent-toggle-mia");
+    const miaCard = document.getElementById("subagent-card-mia");
+    if (miaToggle && miaCard) {
+      miaToggle.addEventListener("click", () => {
+        miaCard.classList.toggle("open");
+      });
+    }
+
     const provSelect = document.getElementById("mia-llm-provider");
     if (provSelect) {
       provSelect.addEventListener("change", (e) => this.switchMiaProvider(e.target.value));
@@ -193,6 +201,15 @@ class SettingsController {
       if (embStat) embStat.textContent = data.stats?.total_embeddings || 0;
       if (backendStat) {
         backendStat.textContent = data.stats?.backend === "mongodb_atlas" ? "Storage: MongoDB Atlas ☁️" : "Storage: SQLite";
+      }
+
+      const badgeCount = document.getElementById("mia-badge-count");
+      if (badgeCount && data.stats?.total_emails !== undefined) {
+        badgeCount.textContent = `${data.stats.total_emails} Emails`;
+      }
+      const badgeStatus = document.getElementById("mia-badge-status");
+      if (badgeStatus) {
+        badgeStatus.textContent = data.stats?.backend === "mongodb_atlas" ? "Cloud 24/7 Active" : "Local SQLite";
       }
 
       if (warningCard) {

@@ -1695,3 +1695,117 @@ input:checked + .slider:before {
   overflow-y: auto;
 }
 
+/* --- Subagents Hub Styles --- */
+.subagents-intro-card {
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.subagent-card {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.subagent-card.open {
+  border-color: rgba(0, 242, 254, 0.35);
+  box-shadow: 0 4px 24px rgba(0, 242, 254, 0.06);
+  background: rgba(14, 20, 32, 0.65);
+}
+
+.subagent-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  background: rgba(255, 255, 255, 0.02);
+  transition: background 0.2s ease;
+}
+
+.subagent-header-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.subagent-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.subagent-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(0, 242, 254, 0.1);
+  border: 1px solid rgba(0, 242, 254, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.subagent-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.subagent-desc {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.subagent-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(0, 242, 254, 0.12);
+  color: var(--cyan-primary);
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.subagent-chevron {
+  font-size: 13px;
+  color: var(--text-muted);
+  transition: transform 0.3s ease;
+  padding: 4px;
+}
+
+.subagent-card.open .subagent-chevron {
+  transform: rotate(180deg);
+  color: var(--cyan-primary);
+}
+
+.subagent-body {
+  padding: 18px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: none;
+}
+
+.subagent-card.open .subagent-body {
+  display: block;
+  animation: fadeInSubagent 0.25s ease-out;
+}
+
+@keyframes fadeInSubagent {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+

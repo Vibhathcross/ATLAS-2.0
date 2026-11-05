@@ -416,7 +416,7 @@
         <div class="modal-tabs">
           <button class="tab-btn active" data-tab="tab-biometrics">Voice Security</button>
           <button class="tab-btn" data-tab="tab-llm">LLM & Intelligence</button>
-          <button class="tab-btn" data-tab="tab-mia" id="tab-btn-mia">Subagents (MIA)</button>
+          <button class="tab-btn" data-tab="tab-mia" id="tab-btn-mia">Subagents Hub</button>
           <button class="tab-btn" data-tab="tab-voice">Voice Output (TTS)</button>
           <button class="tab-btn" data-tab="tab-telegram">Telegram Remote</button>
           <button class="tab-btn" data-tab="tab-logs">Action Logs (SQLite)</button>
@@ -567,159 +567,215 @@
             </div>
           </div>
 
-          <!-- TAB: Subagents & MIA Module -->
+          <!-- TAB: Autonomous Subagents Hub -->
           <div class="tab-content" id="tab-mia">
             <div class="section-card">
-              <div class="mia-card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <div>
-                  <h3 style="margin: 0 0 4px 0;">MIA — Mail Intelligence Assistant</h3>
-                  <p class="section-desc" style="margin: 0;">Cloud-native subagent for email understanding, hybrid search, and digests. Runs 24/7 in the cloud.</p>
+              <div class="subagents-intro-card">
+                <h3 style="margin: 0 0 6px 0; font-size: 17px; display: flex; align-items: center; gap: 8px;">
+                  🤖 Autonomous Subagents Hub
+                </h3>
+                <p class="section-desc" style="margin: 0;">Manage and configure dedicated autonomous subagents that execute specialized background tasks locally and in the cloud.</p>
+              </div>
+
+              <!-- SUBAGENT 1: MIA (Mail Intelligence Assistant) -->
+              <div class="subagent-card open" id="subagent-card-mia">
+                <div class="subagent-header-row" id="subagent-toggle-mia" title="Click to expand/collapse MIA settings">
+                  <div class="subagent-info">
+                    <div class="subagent-icon">📬</div>
+                    <div>
+                      <h4 class="subagent-title">
+                        MIA — Mail Intelligence Assistant
+                        <span class="subagent-badge" id="mia-badge-status">Cloud 24/7 Active</span>
+                        <span class="subagent-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3);" id="mia-badge-count">19 Emails</span>
+                      </h4>
+                      <p class="subagent-desc">Autonomous subagent for inbox understanding, semantic vector search, and digests. Runs 24/7 on Render & MongoDB Atlas.</p>
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 14px;">
+                    <label class="switch" title="Enable / Disable MIA Subagent" onclick="event.stopPropagation();">
+                      <input type="checkbox" id="mia-enabled" checked>
+                      <span class="slider round"></span>
+                    </label>
+                    <span class="subagent-chevron">▼</span>
+                  </div>
                 </div>
-                <div class="setting-row" style="margin: 0; padding: 0;">
-                  <label class="switch" title="Enable / Disable MIA Subagent">
-                    <input type="checkbox" id="mia-enabled" checked>
-                    <span class="slider round"></span>
-                  </label>
+
+                <!-- Expandable Subagent Settings Body -->
+                <div class="subagent-body" id="subagent-body-mia">
+                  <!-- Missing LLM Floating Error Warning Banner -->
+                  <div id="mia-llm-warning-card" class="warning-banner" style="display: none; margin-bottom: 16px;">
+                    <span class="warning-icon">🔴</span>
+                    <div class="warning-text">
+                      <strong>MIA Warning: No Active LLM Configured</strong>
+                      <p>MIA requires an active LLM for full intelligence. A pulsing red dot is visible on the ATLAS main screen until an API key or provider is set below.</p>
+                    </div>
+                  </div>
+
+                  <!-- 24/7 Cloud Subagent Architecture & MongoDB Atlas -->
+                  <div class="subsection-box">
+                    <h4>☁️ 24/7 Cloud Subagent & Storage (MongoDB Atlas)</h4>
+                    <p>MIA runs continuously on cloud infrastructure (Render / GCP) even when this computer is turned off. Powered by MongoDB Atlas cloud database.</p>
+                    
+                    <div class="setting-row">
+                      <label>24/7 Autonomous Cloud Execution Mode</label>
+                      <label class="switch">
+                        <input type="checkbox" id="mia-cloud-mode" checked>
+                        <span class="slider round"></span>
+                      </label>
+                    </div>
+
+                    <div class="form-group">
+                      <label>MongoDB Atlas Cloud URI (Cloud Synchronization)</label>
+                      <input type="password" id="mia-mongodb-uri" class="form-input" placeholder="mongodb+srv://user:password@cluster.mongodb.net/?retryWrites=true&w=majority">
+                    </div>
+
+                    <div class="form-group">
+                      <label>MongoDB Database Name</label>
+                      <input type="text" id="mia-mongodb-db" class="form-input" value="atlas_mia">
+                    </div>
+
+                    <div class="btn-group">
+                      <button id="test-mia-cloud-btn" class="btn btn-secondary">☁️ Test Cloud Connection</button>
+                      <span id="mia-cloud-test-result" class="test-feedback"></span>
+                    </div>
+                  </div>
+
+                  <!-- MIA LLM Intelligence Configuration -->
+                  <div class="subsection-box">
+                    <h4>🧠 MIA Subagent LLM Configuration</h4>
+                    <p>Configure dedicated LLM intelligence specifically for MIA. <strong>Any changes saved here sync automatically to your Render cloud worker.</strong></p>
+                    
+                    <div class="form-group">
+                      <label>MIA LLM Provider</label>
+                      <select id="mia-llm-provider" class="form-select">
+                        <option value="inherit">Inherit Global ATLAS LLM</option>
+                        <option value="gemini">Google Gemini (Recommended)</option>
+                        <option value="openrouter" selected>OpenRouter (Claude / DeepSeek / Nemotron)</option>
+                        <option value="freellmapi">FreeLLMAPI / OpenAI-Compatible</option>
+                        <option value="ollama">Local Ollama</option>
+                      </select>
+                    </div>
+
+                    <div id="mia-custom-llm-fields">
+                      <div class="form-group" id="mia-api-key-group">
+                        <label>MIA API Key</label>
+                        <input type="password" id="mia-api-key" class="form-input" placeholder="Enter API key for MIA (or leave blank if inheriting)">
+                      </div>
+
+                      <div class="form-group" id="mia-model-group">
+                        <label>MIA Model Name</label>
+                        <input type="text" id="mia-model" class="form-input" value="nvidia/nemotron-3.5-lightning:free">
+                      </div>
+
+                      <div class="form-group" id="mia-base-url-group" style="display: none;">
+                        <label>Base Endpoint URL</label>
+                        <input type="text" id="mia-base-url" class="form-input" placeholder="https://api.openai.com/v1">
+                      </div>
+                    </div>
+
+                    <div class="btn-group">
+                      <button id="test-mia-llm-btn" class="btn btn-secondary">⚡ Test MIA LLM</button>
+                      <span id="mia-llm-test-result" class="test-feedback"></span>
+                    </div>
+                  </div>
+
+                  <!-- Summary & Search Confidence Tuning -->
+                  <div class="subsection-box">
+                    <h4>⚙️ Query Confidence & Summary Settings</h4>
+                    
+                    <div class="setting-row">
+                      <label>Default Email Summary Window (Hours)</label>
+                      <div class="range-wrap">
+                        <input type="number" id="mia-summary-hours" class="form-input-sm" min="1" max="168" value="2" style="width: 75px; padding: 4px 8px;">
+                        <span style="font-size: 13px; color: var(--text-muted);">hours (mia: summary)</span>
+                      </div>
+                    </div>
+
+                    <div class="setting-row">
+                      <label>High Confidence Threshold (Default: 0.90)</label>
+                      <div class="range-wrap">
+                        <input type="range" id="mia-high-confidence" min="0.60" max="0.99" step="0.01" value="0.90">
+                        <span id="mia-high-conf-val">0.90</span>
+                      </div>
+                    </div>
+
+                    <div class="setting-row">
+                      <label>Minimum Confidence Threshold (Default: 0.65)</label>
+                      <div class="range-wrap">
+                        <input type="range" id="mia-min-confidence" min="0.40" max="0.90" step="0.01" value="0.65">
+                        <span id="mia-min-conf-val">0.65</span>
+                      </div>
+                    </div>
+
+                    <div class="setting-row">
+                      <label>Ambiguity Margin Delta (Default: 0.08)</label>
+                      <div class="range-wrap">
+                        <input type="range" id="mia-margin-delta" min="0.02" max="0.25" step="0.01" value="0.08">
+                        <span id="mia-margin-val">0.08</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Database Stats & Command Sandbox -->
+                  <div class="subsection-box">
+                    <h4>📊 Database & Command Sandbox</h4>
+                    
+                    <div class="stats-grid" id="mia-stats-display" style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+                      <div class="stat-pill"><span id="mia-stat-emails">0</span> Emails</div>
+                      <div class="stat-pill"><span id="mia-stat-embeddings">0</span> Embeddings</div>
+                      <div class="stat-pill"><span id="mia-stat-backend">Storage: MongoDB Atlas ☁️</span></div>
+                    </div>
+
+                    <div class="btn-group">
+                      <button id="seed-mia-btn" class="btn btn-secondary">🔄 Seed Sample Emails (John Mathew / Thomas)</button>
+                      <span id="seed-mia-feedback" class="test-feedback"></span>
+                    </div>
+
+                    <div class="form-group mt-3">
+                      <label>Interactive Command Sandbox</label>
+                      <div style="display: flex; gap: 8px;">
+                        <input type="text" id="mia-sandbox-input" class="form-input" placeholder="e.g. mia: name(John) or mia: content(deploy)" value="mia: summary()">
+                        <button id="run-mia-sandbox-btn" class="btn btn-primary" style="white-space: nowrap;">Execute</button>
+                      </div>
+                    </div>
+                    <div id="mia-sandbox-output" class="sandbox-output" style="display: none;"></div>
+                  </div>
                 </div>
               </div>
 
-              <!-- Missing LLM Floating Error Warning Banner -->
-              <div id="mia-llm-warning-card" class="warning-banner" style="display: none;">
-                <span class="warning-icon">🔴</span>
-                <div class="warning-text">
-                  <strong>MIA Warning: No Active LLM Configured</strong>
-                  <p>MIA requires an active LLM for full intelligence. A pulsing red dot is visible on the ATLAS main screen until an API key or provider is set below.</p>
-                </div>
-              </div>
-
-              <!-- 24/7 Cloud Subagent Architecture & MongoDB Atlas -->
-              <div class="subsection-box">
-                <h4>☁️ 24/7 Cloud Subagent & Storage (MongoDB Atlas)</h4>
-                <p>MIA runs continuously on cloud infrastructure even when this computer is turned off. Powered by MongoDB Atlas cloud database.</p>
-                
-                <div class="setting-row">
-                  <label>24/7 Autonomous Cloud Execution Mode</label>
-                  <label class="switch">
-                    <input type="checkbox" id="mia-cloud-mode" checked>
-                    <span class="slider round"></span>
-                  </label>
-                </div>
-
-                <div class="form-group">
-                  <label>MongoDB Atlas Cloud URI (Cloud Synchronization)</label>
-                  <input type="password" id="mia-mongodb-uri" class="form-input" placeholder="mongodb+srv://user:password@cluster.mongodb.net/?retryWrites=true&w=majority">
-                </div>
-
-                <div class="form-group">
-                  <label>MongoDB Database Name</label>
-                  <input type="text" id="mia-mongodb-db" class="form-input" value="atlas_mia">
-                </div>
-
-                <div class="btn-group">
-                  <button id="test-mia-cloud-btn" class="btn btn-secondary">☁️ Test Cloud Connection</button>
-                  <span id="mia-cloud-test-result" class="test-feedback"></span>
-                </div>
-              </div>
-
-              <!-- MIA LLM Intelligence Configuration -->
-              <div class="subsection-box">
-                <h4>🧠 MIA Subagent LLM Configuration</h4>
-                <p>Configure dedicated LLM intelligence specifically for MIA or inherit the global ATLAS configuration.</p>
-                
-                <div class="form-group">
-                  <label>MIA LLM Provider</label>
-                  <select id="mia-llm-provider" class="form-select">
-                    <option value="inherit">Inherit Global ATLAS LLM</option>
-                    <option value="gemini" selected>Google Gemini (Recommended)</option>
-                    <option value="openrouter">OpenRouter (Claude / DeepSeek / Llama)</option>
-                    <option value="freellmapi">FreeLLMAPI / OpenAI-Compatible</option>
-                    <option value="ollama">Local Ollama</option>
-                  </select>
-                </div>
-
-                <div id="mia-custom-llm-fields">
-                  <div class="form-group" id="mia-api-key-group">
-                    <label>MIA API Key</label>
-                    <input type="password" id="mia-api-key" class="form-input" placeholder="Enter API key for MIA (or leave blank if inheriting)">
+              <!-- SUBAGENT 2: Telegram Remote Subagent -->
+              <div class="subagent-card" style="opacity: 0.9;">
+                <div class="subagent-header-row" onclick="document.querySelector('[data-tab=\'tab-telegram\']')?.click();" title="Click to view Telegram Agent settings">
+                  <div class="subagent-info">
+                    <div class="subagent-icon" style="background: rgba(0, 136, 204, 0.15); border-color: rgba(0, 136, 204, 0.35); color: #29b6f6;">✈️</div>
+                    <div>
+                      <h4 class="subagent-title">
+                        Telegram Remote Agent
+                        <span class="subagent-badge" style="background: rgba(0, 136, 204, 0.15); color: #29b6f6; border-color: rgba(0, 136, 204, 0.3);">Integrated</span>
+                      </h4>
+                      <p class="subagent-desc">Enables remote command execution, status monitoring, and voice note interaction via Telegram Bot.</p>
+                    </div>
                   </div>
-
-                  <div class="form-group" id="mia-model-group">
-                    <label>MIA Model Name</label>
-                    <input type="text" id="mia-model" class="form-input" value="gemini-1.5-flash">
-                  </div>
-
-                  <div class="form-group" id="mia-base-url-group" style="display: none;">
-                    <label>Base Endpoint URL</label>
-                    <input type="text" id="mia-base-url" class="form-input" placeholder="https://api.openai.com/v1">
-                  </div>
-                </div>
-
-                <div class="btn-group">
-                  <button id="test-mia-llm-btn" class="btn btn-secondary">⚡ Test MIA LLM</button>
-                  <span id="mia-llm-test-result" class="test-feedback"></span>
-                </div>
-              </div>
-
-              <!-- Summary & Search Confidence Tuning -->
-              <div class="subsection-box">
-                <h4>⚙️ Query Confidence & Summary Settings</h4>
-                
-                <div class="setting-row">
-                  <label>Default Email Summary Window (Hours)</label>
-                  <div class="range-wrap">
-                    <input type="number" id="mia-summary-hours" class="form-input-sm" min="1" max="168" value="2" style="width: 75px; padding: 4px 8px;">
-                    <span style="font-size: 13px; color: var(--text-muted);">hours (mia: summary)</span>
-                  </div>
-                </div>
-
-                <div class="setting-row">
-                  <label>High Confidence Threshold (Default: 0.90)</label>
-                  <div class="range-wrap">
-                    <input type="range" id="mia-high-confidence" min="0.60" max="0.99" step="0.01" value="0.90">
-                    <span id="mia-high-conf-val">0.90</span>
-                  </div>
-                </div>
-
-                <div class="setting-row">
-                  <label>Minimum Confidence Threshold (Default: 0.65)</label>
-                  <div class="range-wrap">
-                    <input type="range" id="mia-min-confidence" min="0.40" max="0.90" step="0.01" value="0.65">
-                    <span id="mia-min-conf-val">0.65</span>
-                  </div>
-                </div>
-
-                <div class="setting-row">
-                  <label>Ambiguity Margin Delta (Default: 0.08)</label>
-                  <div class="range-wrap">
-                    <input type="range" id="mia-margin-delta" min="0.02" max="0.25" step="0.01" value="0.08">
-                    <span id="mia-margin-val">0.08</span>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 12px; color: var(--cyan-primary); font-weight: 500;">Manage in Telegram Tab →</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Database Stats & Command Sandbox -->
-              <div class="subsection-box">
-                <h4>📊 Database & Command Sandbox</h4>
-                
-                <div class="stats-grid" id="mia-stats-display" style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
-                  <div class="stat-pill"><span id="mia-stat-emails">0</span> Emails</div>
-                  <div class="stat-pill"><span id="mia-stat-embeddings">0</span> Embeddings</div>
-                  <div class="stat-pill"><span id="mia-stat-backend">Storage: SQLite</span></div>
-                </div>
-
-                <div class="btn-group">
-                  <button id="seed-mia-btn" class="btn btn-secondary">🔄 Seed Sample Emails (John Mathew / Thomas)</button>
-                  <span id="seed-mia-feedback" class="test-feedback"></span>
-                </div>
-
-                <div class="form-group mt-3">
-                  <label>Interactive Command Sandbox</label>
-                  <div style="display: flex; gap: 8px;">
-                    <input type="text" id="mia-sandbox-input" class="form-input" placeholder="e.g. mia: name(John) or mia: content(Inauguration)" value="mia: name(John)">
-                    <button id="run-mia-sandbox-btn" class="btn btn-primary" style="white-space: nowrap;">Execute</button>
+              <!-- SUBAGENT 3: Extensible Slot (Future Subagents) -->
+              <div class="subagent-card" style="opacity: 0.65; border-style: dashed;">
+                <div class="subagent-header-row" style="cursor: default;">
+                  <div class="subagent-info">
+                    <div class="subagent-icon" style="background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.12); color: #94a3b8;">⚡</div>
+                    <div>
+                      <h4 class="subagent-title" style="color: var(--text-muted);">
+                        Autonomous Task Scheduler & Browser Agent
+                        <span class="subagent-badge" style="background: rgba(255, 255, 255, 0.08); color: var(--text-muted); border-color: rgba(255, 255, 255, 0.15);">Planned</span>
+                      </h4>
+                      <p class="subagent-desc">Automate recurring browser workflows, web monitoring, and background scheduled triggers.</p>
+                    </div>
                   </div>
                 </div>
-                <div id="mia-sandbox-output" class="sandbox-output" style="display: none;"></div>
               </div>
 
             </div>

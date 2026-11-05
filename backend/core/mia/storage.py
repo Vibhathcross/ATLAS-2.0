@@ -111,11 +111,40 @@ class MIAStorage:
             except Exception:
                 pass
 
+        # Try to resolve TLS CA bundle via certifi for Windows compatibility
+        ca_file = None
         try:
-            client = pymongo.MongoClient(clean_uri, serverSelectionTimeoutMS=4000)
+            import certifi
+            ca_file = certifi.where()
+        except Exception:
+            pass
+
+        client = None
+        try:
+            kwargs = {
+                "serverSelectionTimeoutMS": 6000,
+                "connectTimeoutMS": 6000,
+                "socketTimeoutMS": 10000,
+            }
+            if ca_file:
+                kwargs["tlsCAFile"] = ca_file
+            else:
+                kwargs["tlsAllowInvalidCertificates"] = True
+
+            client = pymongo.MongoClient(clean_uri, **kwargs)
             client.admin.command('ping')
-            self._mongo_client = client
-            self._cached_mongo_uri = clean_uri
+        except Exception as e:
+            # Fallback attempt with tlsAllowInvalidCertificates if certifi fails
+            try:
+                client = pymongo.MongoClient(clean_uri, serverSelectionTimeoutMS=6000, tlsAllowInvalidCertificates=True)
+                client.admin.command('ping')
+            except Exception as e2:
+                print(f"[MIA Storage] MongoDB Atlas connection error: {e2}")
+                return None
+
+        self._mongo_client = client
+        self._cached_mongo_uri = clean_uri
+        try:
             db_name = config_manager.get("mia.mongodb_db", "atlas_mia")
             db = client[db_name]
             # Ensure indexes
@@ -124,10 +153,9 @@ class MIAStorage:
             db.emails.create_index("received_at")
             db.email_embeddings.create_index("email_id", unique=True)
             db.mia_config.create_index("_id")
-            return client
-        except Exception as e:
-            print(f"[MIA Storage] MongoDB Atlas connection error: {e}")
-            return None
+        except Exception:
+            pass
+        return client
 
     def get_backend_type(self) -> str:
         from backend.config import config_manager
@@ -141,12 +169,30 @@ class MIAStorage:
             return False, "pymongo package not installed."
         if not uri or not uri.strip():
             return False, "MongoDB URI cannot be empty."
+
+        ca_file = None
         try:
-            client = pymongo.MongoClient(uri.strip(), serverSelectionTimeoutMS=4000)
+            import certifi
+            ca_file = certifi.where()
+        except Exception:
+            pass
+
+        try:
+            kwargs = {"serverSelectionTimeoutMS": 6000}
+            if ca_file:
+                kwargs["tlsCAFile"] = ca_file
+            else:
+                kwargs["tlsAllowInvalidCertificates"] = True
+            client = pymongo.MongoClient(uri.strip(), **kwargs)
             client.admin.command('ping')
             return True, "Successfully connected to MongoDB Atlas Cloud."
-        except Exception as e:
-            return False, f"Connection failed: {str(e)}"
+        except Exception:
+            try:
+                client = pymongo.MongoClient(uri.strip(), serverSelectionTimeoutMS=6000, tlsAllowInvalidCertificates=True)
+                client.admin.command('ping')
+                return True, "Successfully connected to MongoDB Atlas Cloud (TLS Fallback)."
+            except Exception as e:
+                return False, f"Connection failed: {str(e)}"
 
     def sync_config_to_cloud(self, config_data: Dict[str, Any]) -> bool:
         """Synchronizes MIA settings to MongoDB Atlas Cloud collection."""
@@ -439,6 +485,23 @@ class MIAStorage:
         backend_type = self.get_backend_type()
         mongo_client = self.get_mongo_client()
         mongo_connected = mongo_client is not None
+
+        if mongo_connected:
+            try:
+                from backend.config import config_manager
+                db_name = config_manager.get("mia.mongodb_db", "atlas_mia")
+                db = mongo_client[db_name]
+                total_emails = db.emails.count_documents({})
+                total_embeddings = db.email_embeddings.count_documents({})
+                return {
+                    "total_emails": total_emails,
+                    "total_embeddings": total_embeddings,
+                    "completed_jobs": total_emails,
+                    "backend": backend_type,
+                    "cloud_connected": True
+                }
+            except Exception as e:
+                print(f"[MIA Storage] Stats from MongoDB Atlas error: {e}")
 
         with self._get_connection() as conn:
             cursor = conn.cursor()
