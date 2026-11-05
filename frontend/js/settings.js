@@ -41,6 +41,17 @@ class SettingsController {
           this.loadLogs();
         } else if (btn.dataset.tab === "tab-mia") {
           this.loadMiaStatus();
+          if (!this._miaLivePoll) {
+            this._miaLivePoll = setInterval(() => {
+              const tab = document.getElementById("tab-mia");
+              if (tab && tab.classList.contains("active")) {
+                this.loadMiaStatus();
+              } else {
+                clearInterval(this._miaLivePoll);
+                this._miaLivePoll = null;
+              }
+            }, 5000);
+          }
         }
       });
     });

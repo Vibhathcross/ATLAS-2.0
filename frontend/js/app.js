@@ -555,7 +555,48 @@ class AtlasApp {
       const res = await fetch("/api/mia/status");
       const data = await res.json();
       this.updateMiaFloatingStatus(data.has_llm, data.llm_message);
+      if (data.stats) {
+        this.handleMiaLiveStats({ stats: data.stats, has_llm: data.has_llm, llm_message: data.llm_message });
+      }
     } catch (e) {}
+  }
+
+  handleMiaLiveStats(data) {
+    if (!data) return;
+    const stats = data.stats;
+    if (stats) {
+      const count = stats.total_emails;
+      const badgeCount = document.getElementById("mia-badge-count");
+      if (badgeCount && count !== undefined) {
+        const prev = badgeCount.dataset.count;
+        badgeCount.textContent = `${count} Emails`;
+        badgeCount.dataset.count = count;
+        if (prev && prev !== String(count)) {
+          badgeCount.classList.add("pulse-update");
+          setTimeout(() => badgeCount.classList.remove("pulse-update"), 1500);
+        }
+      }
+
+      const emailStat = document.getElementById("mia-stat-emails");
+      if (emailStat && count !== undefined) emailStat.textContent = count;
+
+      const embStat = document.getElementById("mia-stat-embeddings");
+      if (embStat && stats.total_embeddings !== undefined) embStat.textContent = stats.total_embeddings;
+
+      const backendStat = document.getElementById("mia-stat-backend");
+      if (backendStat) {
+        backendStat.textContent = stats.backend === "mongodb_atlas" ? "Storage: MongoDB Atlas ☁️" : "Storage: SQLite";
+      }
+
+      const badgeStatus = document.getElementById("mia-badge-status");
+      if (badgeStatus) {
+        badgeStatus.textContent = stats.backend === "mongodb_atlas" ? "Cloud 24/7 Active" : "Local SQLite";
+      }
+    }
+
+    if (data.has_llm !== undefined) {
+      this.updateMiaFloatingStatus(data.has_llm, data.llm_message || data.message);
+    }
   }
 
   handleWsEvent(event, data) {
@@ -568,11 +609,14 @@ class AtlasApp {
       if (data.mia_has_llm !== undefined) {
         this.updateMiaFloatingStatus(data.mia_has_llm, data.mia_llm_message);
       }
+      if (data.mia_stats) {
+        this.handleMiaLiveStats({ stats: data.mia_stats, has_llm: data.mia_has_llm, llm_message: data.mia_llm_message });
+      }
     } else if (event === "config_updated") {
       this.syncConfigToggles(data.config || data);
       this.checkMiaStatus();
-    } else if (event === "mia_status_changed") {
-      this.updateMiaFloatingStatus(data.has_llm, data.message);
+    } else if (event === "mia_status_changed" || event === "mia_stats_updated") {
+      this.handleMiaLiveStats(data);
     } else if (event === "state_change") {
       this.updateState(data.state, data.detail);
     } else if (event === "command_result") {

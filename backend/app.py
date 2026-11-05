@@ -209,7 +209,29 @@ async def startup_event():
             allowed_chat_id=tg_cfg.get("allowed_chat_id")
         ))
     
-    # Do not auto-seed sample emails (user requested clean real mailbox)
+    # 24/7 Live MongoDB Atlas Email Counter & Broadcaster
+    async def mia_live_stats_monitor():
+        last_count = None
+        while True:
+            try:
+                await asyncio.sleep(6)
+                if active_connections:
+                    stats = await asyncio.to_thread(mia_storage.get_stats)
+                    curr_count = stats.get("total_emails", 0)
+                    if curr_count != last_count:
+                        last_count = curr_count
+                        has_llm, llm_msg = mia_agent.check_llm_status()
+                        await broadcast_ws("mia_stats_updated", {
+                            "stats": stats,
+                            "has_llm": has_llm,
+                            "llm_message": llm_msg
+                        })
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                await asyncio.sleep(5)
+
+    asyncio.create_task(mia_live_stats_monitor())
     # asyncio.create_task(seed_sample_emails_if_empty(force=False))
 
     # Auto launch desktop window
@@ -428,13 +450,15 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     active_connections.append(websocket)
     has_llm, llm_msg = mia_agent.check_llm_status()
+    current_mia_stats = await asyncio.to_thread(mia_storage.get_stats)
     await websocket.send_text(json.dumps({
         "event": "connected",
         "data": {
             "config": config_manager.config,
             "biometrics_enrolled": voice_biometrics.is_enrolled(),
             "mia_has_llm": has_llm,
-            "mia_llm_message": llm_msg
+            "mia_llm_message": llm_msg,
+            "mia_stats": current_mia_stats
         }
     }))
     try:
