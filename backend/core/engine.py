@@ -113,76 +113,88 @@ class AtlasEngine:
         brain_mode = config.get("brain_mode", "ai")
         route = "predefined"
         response_text = ""
+        tts_spoken_text = None
+        post_action = None
         success = True
 
+        # Step 1.4: Check MIA Subagent Command ("mia:<command>" or "mia: ...")
+        is_mia = bool(re.match(r"^mia\s*:", command_clean, re.IGNORECASE))
+        if is_mia:
+            from backend.core.mia import mia_agent
+            await self._emit_state("processing", "MIA Processing...")
+            mia_result = await mia_agent.execute(command_clean)
+            route = f"subagent:mia:{mia_result.get('subcommand', 'query')}"
+            response_text = mia_result.get("response", "")
+            tts_spoken_text = mia_result.get("tts_text")
+            success = mia_result.get("success", False)
+
         # Step 1.5: Force Send Now Command ("f:<command>" or "force:<command>")
-        is_force_antigravity = False
-        force_match = re.match(r"^(?:f\s*:|force\s*:|f\s+|force\s+)\s*(.*)$", command_clean, re.IGNORECASE)
-        if force_match:
+        elif bool(re.match(r"^(?:f\s*:|force\s*:|f\s+|force\s+)\s*(.*)$", command_clean, re.IGNORECASE)):
             is_force_antigravity = True
+            force_match = re.match(r"^(?:f\s*:|force\s*:|f\s+|force\s+)\s*(.*)$", command_clean, re.IGNORECASE)
             command_clean = force_match.group(1).strip()
-
-        # Step 2: Check Predefined Actions & Dispatch
-        post_action = None
-        match_info = system_actions.match_predefined_command(command_clean) if not is_force_antigravity else (False, None, None, None)
-        matched = match_info[0]
-
-        if is_force_antigravity:
-            # Force Send Now: Immediately dispatch to Antigravity without waiting for tasks
             from backend.core.antigravity_bridge import antigravity_bridge
             route = "antigravity:force_send_now"
             relayed, msg = antigravity_bridge.send_prompt(command_clean, force_send_now=True, image_path=image_path)
             response_text = msg
             success = relayed
-        elif matched and not image_path:
-            action_name = match_info[1]
-            result = match_info[2]
-            post_action = match_info[3] if len(match_info) > 3 else None
-            route = f"predefined:{action_name}"
-            response_text = str(result)
-        elif config.get("antigravity_mode", False) or image_path:
-            # Explicit guard: NEVER redirect "#anti" or mode toggle commands to the agent
-            from backend.core.actions import RE_TOGGLE_ANTI
-            if RE_TOGGLE_ANTI.match(command_clean.strip()) and not image_path:
-                new_state, msg = system_actions.toggle_antigravity_mode()
-                route = "predefined:toggle_antigravity_mode"
-                response_text = msg
-                post_action = "toggle_antigravity_mode"
-                success = True
-            else:
-                # Antigravity Mode: Route spoken/typed command or image directly to Antigravity
-                from backend.core.antigravity_bridge import antigravity_bridge
-                route = "antigravity:relay"
-                relayed, msg = antigravity_bridge.send_prompt(command_clean, force_send_now=False, image_path=image_path)
-                response_text = msg
-                success = relayed
-        elif brain_mode == "predefined":
-            route = "predefined:unmatched"
-            response_text = "I didn't recognize that predefined command. You can switch to AI Brain mode for conversational requests."
-            success = False
         else:
-            # Step 3: AI Brain LLM Dispatch
-            route = f"llm:{config.get('llm', {}).get('provider', 'gemini')}"
-            try:
-                response_text = await llm_hub.generate_response(
-                    prompt=command_clean,
-                    config=config.get("llm", {}),
-                    system_prompt=config.get("llm", {}).get("system_prompt")
-                )
-            except Exception as e:
-                response_text = f"LLM execution error: {str(e)}"
+            is_force_antigravity = False
+            # Step 2: Check Predefined Actions & Dispatch
+            post_action = None
+            match_info = system_actions.match_predefined_command(command_clean)
+            matched = match_info[0]
+
+            if matched and not image_path:
+                action_name = match_info[1]
+                result = match_info[2]
+                post_action = match_info[3] if len(match_info) > 3 else None
+                route = f"predefined:{action_name}"
+                response_text = str(result)
+            elif config.get("antigravity_mode", False) or image_path:
+                # Explicit guard: NEVER redirect "#anti" or mode toggle commands to the agent
+                from backend.core.actions import RE_TOGGLE_ANTI
+                if RE_TOGGLE_ANTI.match(command_clean.strip()) and not image_path:
+                    new_state, msg = system_actions.toggle_antigravity_mode()
+                    route = "predefined:toggle_antigravity_mode"
+                    response_text = msg
+                    post_action = "toggle_antigravity_mode"
+                    success = True
+                else:
+                    # Antigravity Mode: Route spoken/typed command or image directly to Antigravity
+                    from backend.core.antigravity_bridge import antigravity_bridge
+                    route = "antigravity:relay"
+                    relayed, msg = antigravity_bridge.send_prompt(command_clean, force_send_now=False, image_path=image_path)
+                    response_text = msg
+                    success = relayed
+            elif brain_mode == "predefined":
+                route = "predefined:unmatched"
+                response_text = "I didn't recognize that predefined command. You can switch to AI Brain mode for conversational requests."
                 success = False
+            else:
+                # Step 3: AI Brain LLM Dispatch
+                route = f"llm:{config.get('llm', {}).get('provider', 'gemini')}"
+                try:
+                    response_text = await llm_hub.generate_response(
+                        prompt=command_clean,
+                        config=config.get("llm", {}),
+                        system_prompt=config.get("llm", {}).get("system_prompt")
+                    )
+                except Exception as e:
+                    response_text = f"LLM execution error: {str(e)}"
+                    success = False
 
         latency = int((time.time() - start_time) * 1000)
 
         # Step 4: TTS Generation if voice_output is enabled
         audio_b64 = None
-        if config.get("voice_output", True) and response_text:
+        speech_text = tts_spoken_text or response_text
+        if config.get("voice_output", True) and speech_text:
             await self._emit_state("speaking", "Synthesizing voice response...")
             try:
                 tts_cfg = config.get("tts", {})
                 audio_b64 = await tts_service.synthesize_to_base64(
-                    text=response_text,
+                    text=speech_text,
                     voice=tts_cfg.get("voice", "en-US-ChristopherNeural"),
                     rate=tts_cfg.get("rate", "+0%"),
                     pitch=tts_cfg.get("pitch", "+0Hz")

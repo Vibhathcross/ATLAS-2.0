@@ -39,9 +39,13 @@ class SettingsController {
 
         if (btn.dataset.tab === "tab-logs") {
           this.loadLogs();
+        } else if (btn.dataset.tab === "tab-mia") {
+          this.loadMiaStatus();
         }
       });
     });
+
+    this.initMiaEvents();
 
     // Provider Selector Change
     document.getElementById("llm-provider").addEventListener("change", (e) => {
@@ -97,6 +101,230 @@ class SettingsController {
     document.querySelectorAll(".provider-config").forEach(el => el.style.display = "none");
     const active = document.getElementById(`config-${provider}`);
     if (active) active.style.display = "block";
+  }
+
+  initMiaEvents() {
+    const provSelect = document.getElementById("mia-llm-provider");
+    if (provSelect) {
+      provSelect.addEventListener("change", (e) => this.switchMiaProvider(e.target.value));
+    }
+
+    const highConf = document.getElementById("mia-high-confidence");
+    const highConfVal = document.getElementById("mia-high-conf-val");
+    if (highConf && highConfVal) {
+      highConf.addEventListener("input", (e) => highConfVal.textContent = parseFloat(e.target.value).toFixed(2));
+    }
+
+    const minConf = document.getElementById("mia-min-confidence");
+    const minConfVal = document.getElementById("mia-min-conf-val");
+    if (minConf && minConfVal) {
+      minConf.addEventListener("input", (e) => minConfVal.textContent = parseFloat(e.target.value).toFixed(2));
+    }
+
+    const marginDelta = document.getElementById("mia-margin-delta");
+    const marginVal = document.getElementById("mia-margin-val");
+    if (marginDelta && marginVal) {
+      marginDelta.addEventListener("input", (e) => marginVal.textContent = parseFloat(e.target.value).toFixed(2));
+    }
+
+    const testCloudBtn = document.getElementById("test-mia-cloud-btn");
+    if (testCloudBtn) {
+      testCloudBtn.addEventListener("click", () => this.testMiaCloud());
+    }
+
+    const testLlmBtn = document.getElementById("test-mia-llm-btn");
+    if (testLlmBtn) {
+      testLlmBtn.addEventListener("click", () => this.testMiaLLM());
+    }
+
+    const seedBtn = document.getElementById("seed-mia-btn");
+    if (seedBtn) {
+      seedBtn.addEventListener("click", () => this.seedMiaSamples());
+    }
+
+    const sandboxBtn = document.getElementById("run-mia-sandbox-btn");
+    if (sandboxBtn) {
+      sandboxBtn.addEventListener("click", () => this.runMiaSandbox());
+    }
+  }
+
+  switchMiaProvider(provider) {
+    const customFields = document.getElementById("mia-custom-llm-fields");
+    const baseUrlGroup = document.getElementById("mia-base-url-group");
+    const apiKeyGroup = document.getElementById("mia-api-key-group");
+    const modelGroup = document.getElementById("mia-model-group");
+    const modelInput = document.getElementById("mia-model");
+
+    if (!customFields) return;
+
+    if (provider === "inherit") {
+      customFields.style.opacity = "0.6";
+      if (apiKeyGroup) apiKeyGroup.style.display = "none";
+      if (baseUrlGroup) baseUrlGroup.style.display = "none";
+    } else {
+      customFields.style.opacity = "1";
+      if (apiKeyGroup) apiKeyGroup.style.display = "block";
+      
+      if (provider === "freellmapi" || provider === "ollama") {
+        if (baseUrlGroup) baseUrlGroup.style.display = "block";
+      } else {
+        if (baseUrlGroup) baseUrlGroup.style.display = "none";
+      }
+
+      if (provider === "gemini" && (!modelInput.value || modelInput.value.includes("llama") || modelInput.value === "gpt-3.5-turbo")) {
+        modelInput.value = "gemini-1.5-flash";
+      } else if (provider === "openrouter" && (!modelInput.value || modelInput.value === "gemini-1.5-flash")) {
+        modelInput.value = "google/gemini-2.0-flash-exp:free";
+      }
+    }
+  }
+
+  async loadMiaStatus() {
+    try {
+      const res = await fetch("/api/mia/status");
+      const data = await res.json();
+      
+      const emailStat = document.getElementById("mia-stat-emails");
+      const embStat = document.getElementById("mia-stat-embeddings");
+      const backendStat = document.getElementById("mia-stat-backend");
+      const warningCard = document.getElementById("mia-llm-warning-card");
+
+      if (emailStat) emailStat.textContent = data.stats?.total_emails || 0;
+      if (embStat) embStat.textContent = data.stats?.total_embeddings || 0;
+      if (backendStat) {
+        backendStat.textContent = data.stats?.backend === "mongodb_atlas" ? "Storage: MongoDB Atlas ☁️" : "Storage: SQLite";
+      }
+
+      if (warningCard) {
+        warningCard.style.display = data.has_llm ? "none" : "flex";
+      }
+
+      const dot = document.getElementById("mia-floating-error-dot");
+      if (dot) {
+        dot.style.display = data.has_llm ? "none" : "flex";
+      }
+    } catch (e) {
+      console.warn("Error loading MIA status:", e);
+    }
+  }
+
+  async testMiaCloud() {
+    const uri = document.getElementById("mia-mongodb-uri")?.value || "";
+    const feedback = document.getElementById("mia-cloud-test-result");
+    if (!feedback) return;
+    feedback.textContent = "Connecting to MongoDB Atlas...";
+    feedback.className = "test-feedback info";
+
+    try {
+      const res = await fetch("/api/mia/test-mongodb", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uri })
+      });
+      const data = await res.json();
+      feedback.textContent = data.message || data.detail || (data.success ? "Successfully connected to MongoDB Atlas Cloud." : "Connection failed.");
+      feedback.className = (data.success && !data.detail) ? "test-feedback success" : "test-feedback error";
+      if (data.success) {
+        this.loadMiaStatus();
+      }
+    } catch (e) {
+      feedback.textContent = `Error: ${e.message}`;
+      feedback.className = "test-feedback error";
+    }
+  }
+
+  async testMiaLLM() {
+    const provider = document.getElementById("mia-llm-provider")?.value || "gemini";
+    let payload = { provider };
+    if (provider === "inherit") {
+      payload.provider = document.getElementById("llm-provider")?.value || "gemini";
+      payload.gemini_api_key = document.getElementById("gemini-api-key")?.value;
+      payload.gemini_model = document.getElementById("gemini-model")?.value;
+      payload.openrouter_api_key = document.getElementById("openrouter-api-key")?.value;
+      payload.openrouter_model = document.getElementById("openrouter-model")?.value;
+      payload.freellmapi_url = document.getElementById("freellmapi-url")?.value;
+      payload.freellmapi_key = document.getElementById("freellmapi-key")?.value;
+      payload.freellmapi_model = document.getElementById("freellmapi-model")?.value;
+      payload.ollama_url = document.getElementById("ollama-url")?.value;
+      payload.ollama_model = document.getElementById("ollama-model")?.value;
+    } else {
+      payload.gemini_api_key = document.getElementById("mia-api-key")?.value;
+      payload.gemini_model = document.getElementById("mia-model")?.value;
+      payload.openrouter_api_key = document.getElementById("mia-api-key")?.value;
+      payload.openrouter_model = document.getElementById("mia-model")?.value;
+      payload.freellmapi_url = document.getElementById("mia-base-url")?.value;
+      payload.freellmapi_key = document.getElementById("mia-api-key")?.value;
+      payload.freellmapi_model = document.getElementById("mia-model")?.value;
+      payload.ollama_url = document.getElementById("mia-base-url")?.value;
+      payload.ollama_model = document.getElementById("mia-model")?.value;
+    }
+
+    const feedback = document.getElementById("mia-llm-test-result");
+    if (!feedback) return;
+    feedback.textContent = "Testing MIA LLM connection...";
+    feedback.className = "test-feedback info";
+
+    try {
+      const res = await fetch("/api/mia/test-llm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      feedback.textContent = data.message;
+      feedback.className = data.success ? "test-feedback success" : "test-feedback error";
+      this.loadMiaStatus();
+    } catch (e) {
+      feedback.textContent = `Error: ${e.message}`;
+      feedback.className = "test-feedback error";
+    }
+  }
+
+  async seedMiaSamples() {
+    const feedback = document.getElementById("seed-mia-feedback");
+    if (feedback) {
+      feedback.textContent = "Seeding emails & embeddings...";
+      feedback.className = "test-feedback info";
+    }
+    try {
+      const res = await fetch("/api/mia/seed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ force: true })
+      });
+      const data = await res.json();
+      if (feedback) {
+        feedback.textContent = `Seeded ${data.stats?.total_emails} emails successfully!`;
+        feedback.className = "test-feedback success";
+      }
+      this.loadMiaStatus();
+    } catch (e) {
+      if (feedback) {
+        feedback.textContent = `Seeding error: ${e.message}`;
+        feedback.className = "test-feedback error";
+      }
+    }
+  }
+
+  async runMiaSandbox() {
+    const input = document.getElementById("mia-sandbox-input");
+    const output = document.getElementById("mia-sandbox-output");
+    if (!input || !output) return;
+
+    output.style.display = "block";
+    output.textContent = "Executing query across hybrid search & database...";
+
+    try {
+      const res = await fetch("/api/mia/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command: input.value })
+      });
+      const data = await res.json();
+      output.textContent = data.response || JSON.stringify(data, null, 2);
+    } catch (e) {
+      output.textContent = `Execution Error: ${e.message}`;
+    }
   }
 
   async loadConfig() {
@@ -172,6 +400,61 @@ class SettingsController {
         queueDesc.style.color = cfg.telegram_queue_access ? "var(--cyan-primary)" : "var(--text-muted)";
       }
 
+      // MIA Subagent Config
+      if (cfg.mia) {
+        const miaEn = document.getElementById("mia-enabled");
+        if (miaEn) miaEn.checked = cfg.mia.enabled !== false;
+
+        const miaCloud = document.getElementById("mia-cloud-mode");
+        if (miaCloud) miaCloud.checked = cfg.mia.cloud_subagent_mode !== false;
+
+        const miaMongoUri = document.getElementById("mia-mongodb-uri");
+        if (miaMongoUri) miaMongoUri.value = cfg.mia.mongodb_uri || "";
+
+        const miaMongoDb = document.getElementById("mia-mongodb-db");
+        if (miaMongoDb) miaMongoDb.value = cfg.mia.mongodb_db || "atlas_mia";
+
+        const miaProv = document.getElementById("mia-llm-provider");
+        if (miaProv) {
+          miaProv.value = cfg.mia.provider || "gemini";
+          this.switchMiaProvider(cfg.mia.provider || "gemini");
+        }
+
+        const miaApiKey = document.getElementById("mia-api-key");
+        if (miaApiKey) miaApiKey.value = cfg.mia.api_key || "";
+
+        const miaModel = document.getElementById("mia-model");
+        if (miaModel) miaModel.value = cfg.mia.model || "gemini-1.5-flash";
+
+        const miaBaseUrl = document.getElementById("mia-base-url");
+        if (miaBaseUrl) miaBaseUrl.value = cfg.mia.base_url || "";
+
+        const miaSumm = document.getElementById("mia-summary-hours");
+        if (miaSumm) miaSumm.value = cfg.mia.summary_hours || 2;
+
+        const miaHighConf = document.getElementById("mia-high-confidence");
+        const miaHighConfVal = document.getElementById("mia-high-conf-val");
+        if (miaHighConf) {
+          miaHighConf.value = cfg.mia.high_confidence || 0.90;
+          if (miaHighConfVal) miaHighConfVal.textContent = parseFloat(cfg.mia.high_confidence || 0.90).toFixed(2);
+        }
+
+        const miaMinConf = document.getElementById("mia-min-confidence");
+        const miaMinConfVal = document.getElementById("mia-min-conf-val");
+        if (miaMinConf) {
+          miaMinConf.value = cfg.mia.min_confidence || 0.65;
+          if (miaMinConfVal) miaMinConfVal.textContent = parseFloat(cfg.mia.min_confidence || 0.65).toFixed(2);
+        }
+
+        const miaMargin = document.getElementById("mia-margin-delta");
+        const miaMarginVal = document.getElementById("mia-margin-val");
+        if (miaMargin) {
+          miaMargin.value = cfg.mia.margin_delta || 0.08;
+          if (miaMarginVal) miaMarginVal.textContent = parseFloat(cfg.mia.margin_delta || 0.08).toFixed(2);
+        }
+      }
+      this.loadMiaStatus();
+
     } catch (e) {
       console.error("Failed to load config:", e);
     }
@@ -210,7 +493,21 @@ class SettingsController {
         allowed_chat_id: document.getElementById("telegram-chat-id").value
       },
       antigravity_mode: document.getElementById("toggle-antigravity-mode") ? document.getElementById("toggle-antigravity-mode").checked : false,
-      telegram_queue_access: document.getElementById("toggle-telegram-queue") ? document.getElementById("toggle-telegram-queue").checked : false
+      telegram_queue_access: document.getElementById("toggle-telegram-queue") ? document.getElementById("toggle-telegram-queue").checked : false,
+      mia: {
+        enabled: document.getElementById("mia-enabled") ? document.getElementById("mia-enabled").checked : true,
+        cloud_subagent_mode: document.getElementById("mia-cloud-mode") ? document.getElementById("mia-cloud-mode").checked : true,
+        mongodb_uri: document.getElementById("mia-mongodb-uri") ? document.getElementById("mia-mongodb-uri").value : "",
+        mongodb_db: document.getElementById("mia-mongodb-db") ? document.getElementById("mia-mongodb-db").value : "atlas_mia",
+        provider: document.getElementById("mia-llm-provider") ? document.getElementById("mia-llm-provider").value : "gemini",
+        api_key: document.getElementById("mia-api-key") ? document.getElementById("mia-api-key").value : "",
+        model: document.getElementById("mia-model") ? document.getElementById("mia-model").value : "gemini-1.5-flash",
+        base_url: document.getElementById("mia-base-url") ? document.getElementById("mia-base-url").value : "",
+        summary_hours: parseFloat(document.getElementById("mia-summary-hours")?.value) || 2,
+        high_confidence: parseFloat(document.getElementById("mia-high-confidence")?.value) || 0.90,
+        min_confidence: parseFloat(document.getElementById("mia-min-confidence")?.value) || 0.65,
+        margin_delta: parseFloat(document.getElementById("mia-margin-delta")?.value) || 0.08
+      }
     };
 
     try {

@@ -21,6 +21,10 @@ wheels/
 .installed.cfg
 *.egg
 
+# Binaries & Executables
+*.exe
+cloudflared.exe
+
 # Virtual Environment
 .venv/
 venv/

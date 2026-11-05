@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: atlas-mia
+    runtime: docker
+    dockerfilePath: ./Dockerfile.cloud
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: MIA_API_KEY
+        sync: false
+      - key: MIA_PROVIDER
+        value: openrouter
+      - key: MIA_MODEL
+        value: nvidia/nemotron-3.5-lightning:free

@@ -43,7 +43,22 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "token": "",
         "allowed_chat_id": ""
     },
-    "telegram_queue_access": False
+    "telegram_queue_access": False,
+    "mia": {
+        "enabled": True,
+        "cloud_subagent_mode": True,  # 24/7 autonomous cloud execution even when host machine is off
+        "cloud_worker_url": "",       # Cloud container/worker URL
+        "provider": "gemini",      # "inherit", "gemini", "openrouter", "freellmapi", "ollama"
+        "model": "gemini-1.5-flash",
+        "api_key": "",
+        "base_url": "",
+        "mongodb_uri": "",         # MongoDB Atlas Cloud Connection String
+        "mongodb_db": "atlas_mia",
+        "summary_hours": 2,
+        "high_confidence": 0.90,
+        "min_confidence": 0.65,
+        "margin_delta": 0.08
+    }
 }
 
 class ConfigManager:

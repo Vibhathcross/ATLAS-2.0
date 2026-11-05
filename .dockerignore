@@ -1,0 +1,13 @@
+.git
+.venv
+__pycache__
+*.pyc
+*.bat
+*.vbs
+cloudflared.exe
+tests
+frontend
+documents
+*.zip
+data/*.npy
+data/audio_cache

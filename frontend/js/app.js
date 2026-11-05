@@ -46,6 +46,7 @@ class AtlasApp {
     this.initDrawers();
     this.initWebSocket();
     this.initAudioAnalyzer();
+    this.initMiaFloatingDot();
     this.loadRecentChatHistory();
 
     // Audio context unlock & background wake-word listening
@@ -524,13 +525,54 @@ class AtlasApp {
     }
   }
 
+  initMiaFloatingDot() {
+    const dot = document.getElementById("mia-floating-error-dot");
+    if (dot) {
+      dot.addEventListener("click", () => {
+        if (this.settings) {
+          this.settings.open();
+          const miaTabBtn = document.getElementById("tab-btn-mia");
+          if (miaTabBtn) miaTabBtn.click();
+        }
+      });
+    }
+    this.checkMiaStatus();
+  }
+
+  updateMiaFloatingStatus(hasLlm, message) {
+    const dot = document.getElementById("mia-floating-error-dot");
+    if (!dot) return;
+    if (hasLlm === false) {
+      dot.style.display = "flex";
+      dot.title = message || "MIA Warning: No LLM configured. Click to configure.";
+    } else {
+      dot.style.display = "none";
+    }
+  }
+
+  async checkMiaStatus() {
+    try {
+      const res = await fetch("/api/mia/status");
+      const data = await res.json();
+      this.updateMiaFloatingStatus(data.has_llm, data.llm_message);
+    } catch (e) {}
+  }
+
   handleWsEvent(event, data) {
     if (event === "reload_page") {
       window.location.reload();
       return;
     }
-    if (event === "connected" || event === "config_updated") {
+    if (event === "connected") {
       this.syncConfigToggles(data.config || data);
+      if (data.mia_has_llm !== undefined) {
+        this.updateMiaFloatingStatus(data.mia_has_llm, data.mia_llm_message);
+      }
+    } else if (event === "config_updated") {
+      this.syncConfigToggles(data.config || data);
+      this.checkMiaStatus();
+    } else if (event === "mia_status_changed") {
+      this.updateMiaFloatingStatus(data.has_llm, data.message);
     } else if (event === "state_change") {
       this.updateState(data.state, data.detail);
     } else if (event === "command_result") {
@@ -897,13 +939,15 @@ class AtlasApp {
     bubble.className = `chat-bubble chat-${sender}`;
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+    const formattedContent = this.formatChatContent(text);
+
     if (sender === "user") {
       bubble.innerHTML = `
         <div class="chat-meta">
           <span>YOU (${escapeHtml(routeOrSource)})</span>
           <span>${timeStr}</span>
         </div>
-        <div class="chat-text">${escapeHtml(text)}</div>
+        <div class="chat-text">${formattedContent}</div>
       `;
     } else if (routeOrSource === "security_mismatch" || routeOrSource === "biometrics_denied") {
       bubble.classList.add("chat-security-denied");
@@ -912,7 +956,7 @@ class AtlasApp {
           <span class="chat-route security-badge">🛡️ SECURITY MISMATCH</span>
           <span>${timeStr}</span>
         </div>
-        <div class="chat-text security-mismatch-text">${escapeHtml(text)}</div>
+        <div class="chat-text security-mismatch-text">${formattedContent}</div>
       `;
     } else {
       const metaInfo = latency > 0 ? `${routeOrSource} · ${latency}ms` : routeOrSource;
@@ -921,12 +965,24 @@ class AtlasApp {
           <span class="chat-route">ATLAS (${escapeHtml(metaInfo)})</span>
           <span>${timeStr}</span>
         </div>
-        <div class="chat-text">${escapeHtml(text)}</div>
+        <div class="chat-text">${formattedContent}</div>
       `;
     }
 
     this.chatContainer.appendChild(bubble);
     this.scrollToBottom();
+  }
+
+  formatChatContent(str) {
+    if (!str) return "";
+    let html = str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    // Bold: **text**
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color: #fff; font-weight: 600;">$1</strong>');
+    // Italic: *text*
+    html = html.replace(/\*([^*\n]+?)\*/g, '<em style="color: #7dd3fc; font-style: normal;">$1</em>');
+    // Inline code: `code`
+    html = html.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 12px; color: var(--cyan-primary);">$1</code>');
+    return html;
   }
 
   scrollToBottom() {

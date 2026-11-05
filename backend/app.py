@@ -29,6 +29,7 @@ from backend.core.voice_biometrics import voice_biometrics
 from backend.core.telegram_bot import telegram_bridge, TelegramBridge
 from backend.core.engine import atlas_engine
 from backend.core.antigravity_watcher import antigravity_watcher
+from backend.core.mia import mia_agent, mia_storage, seed_sample_emails_if_empty, email_ingestion_service
 
 app = FastAPI(title="ATLAS 2.0 Engine", version="2.0.0")
 
@@ -208,6 +209,9 @@ async def startup_event():
             allowed_chat_id=tg_cfg.get("allowed_chat_id")
         ))
     
+    # Do not auto-seed sample emails (user requested clean real mailbox)
+    # asyncio.create_task(seed_sample_emails_if_empty(force=False))
+
     # Auto launch desktop window
     launch_app_window("http://127.0.0.1:8000")
 
@@ -242,6 +246,12 @@ async def update_config(payload: Dict[str, Any]):
 
     if config_manager.get("telegram_queue_access", False):
         telegram_bridge.notify_queue()
+
+    has_llm, llm_msg = mia_agent.check_llm_status()
+    await broadcast_ws("mia_status_changed", {"has_llm": has_llm, "message": llm_msg})
+
+    # Sync MIA configuration to Cloud MongoDB Atlas
+    mia_storage.sync_config_to_cloud(config_manager.config.get("mia", {}))
 
     return {"status": "ok", "config": config_manager.config}
 
@@ -355,17 +365,76 @@ async def delete_voice_profile():
     await broadcast_ws("config_updated", config_manager.config)
     return {"success": True, "message": "Voice profile successfully removed. You can now record new samples."}
 
+# --- MIA (Mail Intelligence Assistant) Endpoints ---
+
+@app.get("/api/mia/status")
+async def get_mia_status():
+    has_llm, llm_msg = mia_agent.check_llm_status()
+    stats = mia_storage.get_stats()
+    mia_cfg = config_manager.get("mia", {})
+    return {
+        "enabled": mia_cfg.get("enabled", True),
+        "has_llm": has_llm,
+        "llm_message": llm_msg,
+        "provider": mia_cfg.get("provider", "gemini"),
+        "model": mia_cfg.get("model", ""),
+        "summary_hours": mia_cfg.get("summary_hours", 2),
+        "high_confidence": mia_cfg.get("high_confidence", 0.90),
+        "min_confidence": mia_cfg.get("min_confidence", 0.65),
+        "margin_delta": mia_cfg.get("margin_delta", 0.08),
+        "mongodb_uri": mia_cfg.get("mongodb_uri", ""),
+        "mongodb_db": mia_cfg.get("mongodb_db", "atlas_mia"),
+        "stats": stats
+    }
+
+@app.post("/api/mia/seed")
+async def seed_mia(payload: Dict[str, Any] = None):
+    force = bool((payload or {}).get("force", False))
+    stats = await seed_sample_emails_if_empty(force=force)
+    return {"status": "ok", "stats": stats}
+
+@app.post("/api/mia/ingest")
+async def ingest_email_api(payload: Dict[str, Any]):
+    if not payload.get("email_id"):
+        payload["email_id"] = f"email-api-{int(time.time())}"
+    record = await email_ingestion_service.ingest_email(payload)
+    return {"status": "ok", "email": record}
+
+@app.post("/api/mia/query")
+async def query_mia_api(payload: Dict[str, Any]):
+    cmd = payload.get("command", "")
+    res = await mia_agent.execute(cmd)
+    return res
+
+@app.post("/api/mia/test-mongodb")
+async def test_mongodb_endpoint(payload: Dict[str, Any]):
+    uri = payload.get("uri", "")
+    success, msg = mia_storage.test_mongodb(uri)
+    if success:
+        config_manager.update("mia.mongodb_uri", uri)
+        mia_storage.sync_config_to_cloud(config_manager.config.get("mia", {}))
+    return {"success": success, "message": msg}
+
+@app.post("/api/mia/test-llm")
+async def test_mia_llm(payload: Dict[str, Any]):
+    provider = payload.get("provider", "gemini")
+    success, msg = await llm_hub.test_connection(provider, payload)
+    return {"success": success, "message": msg}
+
 # --- WebSocket Channel ---
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     active_connections.append(websocket)
+    has_llm, llm_msg = mia_agent.check_llm_status()
     await websocket.send_text(json.dumps({
         "event": "connected",
         "data": {
             "config": config_manager.config,
-            "biometrics_enrolled": voice_biometrics.is_enrolled()
+            "biometrics_enrolled": voice_biometrics.is_enrolled(),
+            "mia_has_llm": has_llm,
+            "mia_llm_message": llm_msg
         }
     }))
     try:
